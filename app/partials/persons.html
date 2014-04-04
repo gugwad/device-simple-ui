@@ -3,7 +3,7 @@
 </div>
 <div class="form-group">
     <label class="sr-only" for="searchPerson">Search Person</label>
-    <input type="search" ng-model="search" class="form-control" id="searchPerson" placeholder="Search by name ...">
+    <input type="search" ng-model="search" class="form-control" id="searchPerson" placeholder="Search for people ...">
 </div>
 <table class="table table-hover table-striped table-bordered">
     <thead>
@@ -16,12 +16,12 @@
     </tr>
     <tbody>
     <tr ng-hide="persons.length">
-        <td colspan="5">No data in the database.</td>
+        <td colspan="5">No data available to display.</td>
     </tr>
     <tr ng-repeat="person in persons">
-        <td><a href="#/person/{{person.id}}"><i class="glyphicon glyphicon-pencil"></i></a></td>
-        <td>{{person.names[0].givenName}}</td>
-        <td>{{person.names[0].familyName}}</td>
+        <td class="text-center"><a href="#/person/{{person.id}}"><i class="glyphicon glyphicon-pencil"></i></a></td>
+        <td>{{person.personNames[0].givenName}}</td>
+        <td>{{person.personNames[0].familyName}}</td>
         <td>{{person.birthdate}}</td>
         <td>{{person.gender}}</td>
     </tr>
