@@ -37,3 +37,9 @@ body > .container {
 code {
     font-size: 80%;
 }
+
+
+thead th {
+    background-color: #006DCC;
+    color: white;
+}
