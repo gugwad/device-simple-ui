@@ -1,0 +1,36 @@
+<div class="page-header">
+    <h2>Registered Person</h2>
+</div>
+<div class="form-group">
+    <label class="sr-only" for="searchPerson">Search Person</label>
+    <input type="search" ng-model="search" class="form-control" id="searchPerson" placeholder="Search by name ...">
+</div>
+<table class="table table-hover table-striped table-bordered">
+    <thead>
+    <tr>
+        <th>&nbsp;</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Date of Birth</th>
+        <th>Gender</th>
+    </tr>
+    <tbody>
+    <tr ng-hide="persons.length">
+        <td colspan="5">No data in the database.</td>
+    </tr>
+    <tr ng-repeat="person in persons">
+        <td><a href="#/person/{{person.id}}"><i class="glyphicon glyphicon-pencil"></i></a></td>
+        <td>{{person.names[0].givenName}}</td>
+        <td>{{person.names[0].familyName}}</td>
+        <td>{{person.birthdate}}</td>
+        <td>{{person.gender}}</td>
+    </tr>
+    </tbody>
+    </thead>
+</table>
+<div ng-show="persons.length > 0" class="row">
+    <div class="col-md-12 pull-left">
+        <pagination page="currentPage" total-items="count" items-per-page="pageSize" max-size="maxSize"
+                    boundary-links="true"></pagination>
+    </div>
+</div>
