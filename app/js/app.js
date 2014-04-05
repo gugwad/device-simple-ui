@@ -22,7 +22,7 @@ muzimaDevice.service('$person', function($http, $dataProvider) {
         return $http.get($dataProvider + "/api/person?query=" + search + "&max=" + pageSize + "&offset=" + (pageSize * (currentPage - 1)));
     };
     var getPerson = function(personId) {
-        return $http.get($dataProvider + "/person/" + personId);
+        return $http.get($dataProvider + "/api/person/" + personId);
     };
     return {
         searchPerson: searchPerson,
@@ -35,7 +35,7 @@ muzimaDevice.service('$device', function($http, $dataProvider) {
         return $http.get($dataProvider + "/api/device?query=" + search + "&max=" + pageSize + "&offset=" + (pageSize * (currentPage - 1)));
     };
     var getDevice = function(personId) {
-        return $http.get($dataProvider + "/device/" + personId);
+        return $http.get($dataProvider + "/api/device/" + personId);
     };
     return {
         searchDevice: searchDevice,
