@@ -1,55 +1,62 @@
 <div class="container-fluid">
     <div class="top-buffer row">
-        <div class="col-lg-4 pull-left">
+        <div class="col-md-4 pull-left text-center">
             <img height="300" width="auto" src="img/nexus-5.jpg" class="img-rounded">
-            <img ng-show="male" height="200" width="200" src="img/male.png" class="img-rounded">
         </div>
-        <div class="col-lg-8 pull-right">
+        <div class="col-md-8 pull-right">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-lg-12">
-                        <h2>{{device.name}}</h2>
+                    <div class="col-md-8 pull-left">
+                        <h3>{{device.name}}</h3>
+                    </div>
+                    <div class="col-md-4 pull-right text-right">
+                        <span class="glyphicon glyphicon-pencil"></span> Edit
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-3"><strong>IMEI</strong></div>
-                    <div class="col-lg-9">: {{device.imei}}</div>
-               </div>
-                <div class="row">
-                    <div class="col-lg-3"><strong>SIM</strong></div>
-                    <div class="col-lg-9">: {{device.sim}}</div>
+                    <div class="col-md-3"><strong>IMEI</strong></div>
+                    <div class="col-md-9">: {{device.imei}}</div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-3"><strong>Purchased on</strong></div>
-                    <div class="col-lg-9">: {{device.purchasedDate}}</div>
+                    <div class="col-md-3"><strong>SIM</strong></div>
+                    <div class="col-md-9">: {{device.sim}}</div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-3"><strong>Device type</strong></div>
-                    <div class="col-lg-9">: {{device.deviceType.name}}</div>
+                    <div class="col-md-3"><strong>Purchased on</strong></div>
+                    <div class="col-md-9">: {{device.purchasedDate}}</div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-12">{{device.deviceType.description}}</div>
+                    <div class="col-md-3"><strong>Device type</strong></div>
+                    <div class="col-md-9">: {{device.deviceType.name}}</div>
                 </div>
+                <div class="row">
+                    <div class="col-md-12 text-justify">{{device.deviceType.description}}</div>
+                </div>
+            </div>
+            <div class="container-fluid">
                 <div class="top-buffer row"></div>
                 <div class="top-buffer row"></div>
                 <div class="row">
-                    <div class="col-lg-3"><strong>Assigned to</strong></div>
-                    <div class="col-lg-9">: NA</div>
+                    <div class="col-md-3"><strong>Assigned to</strong></div>
+                    <div class="col-md-5">: NA</div>
+                    <div class="col-md-4 pull-right text-right">
+                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <div class="top-buffer row">
-    <div class="col-lg-12">
+    <div class="col-md-12">
         <tabset>
             <tab heading="Specifications" active="tab.active">
                 <div class="container-fluid" ng-repeat="(key, values) in groupedDetails">
                     <div class="head">{{key}}</div>
                     <div class="container-fluid" ng-repeat="value in values">
                         <div class="top-buffer row">
-                            <div class="col-lg-2"><strong>{{value.subCategory}}</strong></div>
-                            <div class="col-lg-10">{{value.categoryValue}}</div>
+                            <div class="col-md-2"><strong>{{value.subCategory}}</strong></div>
+                            <div class="col-md-10">{{value.categoryValue}}</div>
                         </div>
                         <div class="top-buffer row"></div>
                     </div>

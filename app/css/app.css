@@ -45,9 +45,14 @@ div.head {
     padding: 10px;
 }
 
-div.head, thead th {
-    background-color: #006DCC;
+div.head a.no-decoration, div.head, thead th {
+    background-color: #428bca;
     color: white;
+}
+
+div.head a.no-decoration:hover {
+    background-color: #428bca;
+    color: lightgrey;
 }
 
 .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
@@ -79,4 +84,13 @@ div.head, thead th {
     border-style: solid;
     border-width: 1px;
     border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #CCCCCC;;
+}
+
+.no-decoration {
+    text-decoration: none !important;
+    cursor: default;
+}
+
+.button-save-row {
+    padding-left: 0px;
 }

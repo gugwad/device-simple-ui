@@ -1,0 +1,31 @@
+<div class="page-header">
+    <h2>Registered Device Types</h2>
+</div>
+<div class="form-group">
+    <label class="sr-only" for="searchDeviceType">Search Device Type</label>
+    <input type="search" ng-model="search" class="form-control" id="searchDeviceType" placeholder="Search for device types...">
+</div>
+<table class="table table-hover table-striped table-bordered">
+    <thead>
+    <tr>
+        <th>&nbsp;</th>
+        <th>Name</th>
+        <th colspan="3">Description</th>
+    </tr>
+    <tbody>
+    <tr ng-hide="deviceTypes.length">
+        <td colspan="5">No data available to display.</td>
+    </tr>
+    <tr ng-repeat="deviceType in deviceTypes">
+        <td class="text-center"><a href="#/deviceType/{{deviceType.id}}"><i class="glyphicon glyphicon-pencil"></i></a></td>
+        <td>{{deviceType.name}}</td>
+        <td colspan="3">{{deviceType.description | limitTo: 100}} ...</td>
+    </tr>
+    </tbody>
+    </thead>
+</table>
+<div ng-show="devices.length > 0" class="row">
+    <div class="col-md-12 pull-left">
+        <pagination page="currentPage" total-items="count" items-per-page="pageSize" max-size="maxSize" boundary-links="true" />
+    </div>
+</div>

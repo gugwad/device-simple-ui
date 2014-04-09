@@ -1,0 +1,164 @@
+<div class="container-fluid">
+    <div class="top-buffer row">
+        <div class="col-md-4 pull-left">
+            <img ng-show="female" height="200" width="200" src="img/female.png" class="img-rounded">
+            <img ng-show="male" height="200" width="200" src="img/male.png" class="img-rounded">
+        </div>
+        <div class="col-md-8 pull-right">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{preferredName.familyName}}, {{preferredName.givenName}}</h3>
+                </div>
+                <div class="panel-body">
+                    DOB: {{person.birthdate}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="top-buffer row">
+        <div class="col-md-12">
+            <tabset>
+                <tab heading="Known Names" active="tab.active">
+                    <div class="container-fluid head">
+                        <div class="row">
+                            <div class="col-md-8">Names</div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="top-buffer row">
+                            <div class="col-md-12">
+                                <tabset>
+                                    <tab heading="{{$parent.numericalOrder($index + 1  )}} Name Record"
+                                         ng-repeat="personName in person.personNames" active="personName.active">
+                                        <div role="form">
+                                            <div class="form-group">
+                                                <label for="prefix[{{$index}}]">Prefix</label>
+                                                <input type="text" ng-model="person.personNames[$index].prefix"
+                                                       class="form-control" id="prefix[{{$index}}]"
+                                                       placeholder="Enter prefix ...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="givenName[{{$index}}]">Given name</label>
+                                                <input type="text" ng-model="person.personNames[$index].givenName"
+                                                       class="form-control" id="givenName[{{$index}}]"
+                                                       placeholder="Enter given name ...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="middleName[{{$index}}]">Middle name</label>
+                                                <input type="text" ng-model="person.personNames[$index].middleName"
+                                                       class="form-control" id="middleName[{{$index}}]"
+                                                       placeholder="Enter middle name ...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="familyName[{{$index}}]">Family name</label>
+                                                <input type="text" ng-model="person.personNames[$index].familyName"
+                                                       class="form-control" id="familyName[{{$index}}]"
+                                                       placeholder="Enter family name ...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="degree[{{$index}}]">Degree</label>
+                                                <input type="text" ng-model="person.personNames[$index].degree"
+                                                       class="form-control" id="degree[{{$index}}]"
+                                                       placeholder="Enter degree ...">
+                                            </div>
+                                        </div>
+                                    </tab>
+                                    <tab select="addPersonName(person)">
+                                        <tab-heading>
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                        </tab-heading>
+                                    </tab>
+                                </tabset>
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-md-12 button-save-row">
+                                            <button type="submit" ng-click="savePerson()" class="btn btn-default">
+                                                Save Person
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row top-buffer"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+                <tab heading="Known Addresses">
+                    <div class="container-fluid head">
+                        <div class="row">
+                            <div class="col-md-8">Address</div>
+                        </div>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="top-buffer row">
+                            <div class="col-md-12">
+                                <tabset>
+                                    <tab heading="{{$parent.numericalOrder($index + 1  )}} Address Record"
+                                         ng-repeat="personAddress in person.personAddresses"
+                                         active="personAddress.active">
+                                        <div role="form">
+                                            <div class="form-group">
+                                                <label for="address1[{{$index}}]">Address 1</label>
+                                                <input type="text" ng-model="person.personAddresses[$index].address1"
+                                                       class="form-control" id="address1[{{$index}}]"
+                                                       placeholder="Enter address 1 ...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="address2[{{$index}}]">Address 2</label>
+                                                <input type="text" ng-model="person.personAddresses[$index].address2"
+                                                       class="form-control" id="address2[{{$index}}]"
+                                                       placeholder="Enter address 2 ...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="cityVillage[{{$index}}]">City / Village</label>
+                                                <input type="text" ng-model="person.personAddresses[$index].cityVillage"
+                                                       class="form-control" id="cityVillage[{{$index}}]"
+                                                       placeholder="Enter city or village name ...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="countyDistrict[{{$index}}]">County / District</label>
+                                                <input type="text"
+                                                       ng-model="person.personAddresses[$index].countyDistrict"
+                                                       class="form-control" id="countyDistrict[{{$index}}]"
+                                                       placeholder="Enter county or district name ...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="stateProvince[{{$index}}]">State / Province</label>
+                                                <input type="text"
+                                                       ng-model="person.personAddresses[$index].stateProvince"
+                                                       class="form-control" id="stateProvince[{{$index}}]"
+                                                       placeholder="Enter state or province name ...">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="postalCode[{{$index}}]">Postal Code</label>
+                                                <input type="text" ng-model="person.personAddresses[$index].postalCode"
+                                                       class="form-control" id="postalCode[{{$index}}]"
+                                                       placeholder="Enter postal code ...">
+                                            </div>
+                                        </div>
+                                    </tab>
+                                    <tab select="addPersonAddress()">
+                                        <tab-heading>
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                        </tab-heading>
+                                    </tab>
+                                </tabset>
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-md-12 button-save-row">
+                                            <button type="submit" ng-click="savePerson()" class="btn btn-default">
+                                                Save Person
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row top-buffer"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
+                <tab heading="Device Assigned"></tab>
+            </tabset>
+        </div>
+    </div>
+</div>
