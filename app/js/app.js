@@ -6,6 +6,7 @@ var muzimaDevice = angular.module('muzimaDevice', ['ngRoute', 'muzimaDevice.filt
 
 muzimaDevice.config(['$routeProvider', function ($routeProvider) {
     $routeProvider.when('/home', {templateUrl: 'partials/home.html', controller: 'HomeCtrl'});
+    $routeProvider.when('/person', {templateUrl: 'partials/createPerson.html', controller: 'CreatePersonCtrl'});
     $routeProvider.when('/person/:personId', {templateUrl: 'partials/person.html', controller: 'PersonCtrl'});
     $routeProvider.when('/person/:personId/edit', {templateUrl: 'partials/editPerson.html', controller: 'EditPersonCtrl'});
     $routeProvider.when('/persons', {templateUrl: 'partials/persons.html', controller: 'PersonsCtrl'});
@@ -34,10 +35,18 @@ muzimaDevice.service('$person', function ($http, $dataProvider) {
             url: $dataProvider + "/api/person/" + person.id
         });
     };
+    var savePerson = function(person) {
+        return $http({
+            method: "POST",
+            data: person,
+            url: $dataProvider + "/api/person/"
+        });
+    };
     return {
         searchPerson: searchPerson,
         getPerson: getPerson,
-        updatePerson: updatePerson
+        updatePerson: updatePerson,
+        savePerson: savePerson
     }
 });
 
