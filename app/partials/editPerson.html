@@ -10,7 +10,18 @@
                     <h3 class="panel-title">{{preferredName.familyName}}, {{preferredName.givenName}}</h3>
                 </div>
                 <div class="panel-body">
-                    DOB: {{person.birthdate}}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div role="form">
+                                <div class="form-group">
+                                    <label for="birthdate">Date of birth</label>
+                                    <input id="birthdate" type="text" class="form-control" datepicker-popup="dd-MMM-yyyy"
+                                           ng-model="person.birthdate" is-open="opened" ng-required="true"
+                                           close-text="Close"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

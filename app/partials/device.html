@@ -4,45 +4,55 @@
             <img height="300" width="auto" src="img/nexus-5.jpg" class="img-rounded">
         </div>
         <div class="col-md-8 pull-right">
-            <div class="container-fluid">
+            <div class="container-fluid head">
                 <div class="row">
-                    <div class="col-md-8 pull-left">
-                        <h3>{{device.name}}</h3>
-                    </div>
+                    <div class="col-md-8">{{device.name}}</div>
                     <div class="col-md-4 pull-right text-right">
-                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                        <a class="no-decoration" href="#/device/{{deviceId}}/edit">
+                            <span class="glyphicon glyphicon-pencil"></span> Edit
+                        </a>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3"><strong>IMEI</strong></div>
-                    <div class="col-md-9">: {{device.imei}}</div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3"><strong>SIM</strong></div>
-                    <div class="col-md-9">: {{device.sim}}</div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3"><strong>Purchased on</strong></div>
-                    <div class="col-md-9">: {{device.purchasedDate}}</div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3"><strong>Device type</strong></div>
-                    <div class="col-md-9">: {{device.deviceType.name}}</div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 text-justify">{{device.deviceType.description}}</div>
                 </div>
             </div>
             <div class="container-fluid">
-                <div class="top-buffer row"></div>
-                <div class="top-buffer row"></div>
-                <div class="row">
+                <div class="top-buffer row">
+                    <div class="col-md-3"><strong>IMEI</strong></div>
+                    <div class="col-md-9">{{device.imei}}</div>
+                </div>
+                <div class="row top-buffer"></div>
+                <div class="row last-row"></div>
+                <div class="top-buffer row">
+                    <div class="col-md-3"><strong>SIM</strong></div>
+                    <div class="col-md-9">{{device.sim}}</div>
+                </div>
+                <div class="row top-buffer"></div>
+                <div class="row last-row"></div>
+                <div class="top-buffer row">
+                    <div class="col-md-3"><strong>Purchased on</strong></div>
+                    <div class="col-md-9">{{device.purchasedDate}}</div>
+                </div>
+                <div class="row top-buffer"></div>
+                <div class="row last-row"></div>
+                <div class="top-buffer row">
+                    <div class="col-md-3"><strong>Device type</strong></div>
+                    <div class="col-md-9">{{device.deviceType.name}}</div>
+                </div>
+                <div class="row top-buffer"></div>
+                <div class="row last-row"></div>
+                <div class="top-buffer row">
+                    <div class="col-md-12 text-justify">{{device.deviceType.description}}</div>
+                </div>
+                <div class="row top-buffer"></div>
+                <div class="row last-row"></div>
+                <div class="top-buffer row">
                     <div class="col-md-3"><strong>Assigned to</strong></div>
-                    <div class="col-md-5">: NA</div>
+                    <div class="col-md-5">N/A</div>
                     <div class="col-md-4 pull-right text-right">
                         <span class="glyphicon glyphicon-pencil"></span> Edit
                     </div>
                 </div>
+                <div class="row top-buffer"></div>
+                <div class="row last-row"></div>
             </div>
         </div>
     </div>

@@ -73,6 +73,7 @@ angular.module('muzimaDevice.controllers', [])
     .controller('EditPersonCtrl', ['$person', '$filter', '$rootScope', '$scope', '$routeParams', '$location',
         function ($person, $filter, $rootScope, $scope, $routeParams, $location) {
             $scope.person = {};
+            $scope.format = "dd-MMM-yyyy";
             $scope.personId = $routeParams.personId;
             $person.getPerson($scope.personId)
                 .success(function (data) {
@@ -101,16 +102,16 @@ angular.module('muzimaDevice.controllers', [])
                         $scope.person["personNames"][0].active = true;
                     }
                     if ($scope.person.hasOwnProperty("personAddresses")) {
-                        angular.forEach($scope.person["personAddresses"], function(personAddress) {
+                        angular.forEach($scope.person["personAddresses"], function (personAddress) {
                             personAddress.active = false;
                         });
                         // make the first tab as active
                         $scope.person["personAddresses"][0].active = true;
                     }
                 });
-            $scope.addPersonName = function() {
+            $scope.addPersonName = function () {
                 if ($scope.person.hasOwnProperty("personNames")) {
-                    angular.forEach($scope.person["personNames"], function(personName) {
+                    angular.forEach($scope.person["personNames"], function (personName) {
                         personName.active = false;
                     });
                     $scope.person["personNames"].push({
@@ -118,9 +119,9 @@ angular.module('muzimaDevice.controllers', [])
                     });
                 }
             };
-            $scope.addPersonAddress = function() {
+            $scope.addPersonAddress = function () {
                 if ($scope.person.hasOwnProperty("personAddresses")) {
-                    angular.forEach($scope.person["personAddresses"], function(personAddress) {
+                    angular.forEach($scope.person["personAddresses"], function (personAddress) {
                         personAddress.active = false;
                     });
                     $scope.person["personAddresses"].push({
@@ -128,14 +129,19 @@ angular.module('muzimaDevice.controllers', [])
                     });
                 }
             };
-            $scope.savePerson = function() {
+            $scope.savePerson = function () {
                 $person.updatePerson($scope.person)
-                    .success(function(data) {
+                    .success(function (data) {
                         if (data.hasOwnProperty("id")) {
                             $location.path("/person/" + data["id"]);
                         }
                     });
-            }
+            };
+            $scope.openCalendar = function ($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.opened = true;
+            };
         }])
     .controller('DevicesCtrl', ['$device', '$rootScope', '$scope',
         function ($device, $rootScope, $scope) {
@@ -186,6 +192,39 @@ angular.module('muzimaDevice.controllers', [])
                     }
                 });
         }])
+    .controller('EditDeviceCtrl', ['$device', '$filter', '$rootScope', '$scope', '$routeParams', '$location',
+        function ($device, $filter, $rootScope, $scope, $routeParams, $location) {
+            $scope.device = {};
+            $scope.format = "dd-MMM-yyyy";
+            $scope.deviceId = $routeParams.deviceId;
+            $device.getDevice($scope.deviceId)
+                .success(function (data) {
+                    $scope.device = data;
+                    $scope.groupedDetails = {};
+                    var deviceType = data["deviceType"];
+                    var deviceDetails = deviceType["deviceDetails"];
+                    for (var i = 0; i < deviceDetails.length; i++) {
+                        var deviceDetail = deviceDetails[i];
+                        var category = deviceDetail["category"];
+                        $scope.groupedDetails[category] = $filter('filter')(deviceDetails, {"category": category});
+                    }
+                });
+
+            $scope.savePerson = function () {
+                $device.updateDevice($scope.device)
+                    .success(function (data) {
+                        if (data.hasOwnProperty("id")) {
+                            $location.path("/device/" + data["id"]);
+                        }
+                    });
+            };
+
+            $scope.openCalendar = function ($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.opened = true;
+            };
+        }])
     .controller('DeviceTypesCtrl', ['$deviceType', '$rootScope', '$scope',
         function ($deviceType, $rootScope, $scope) {
             $rootScope.navigation = "deviceType";
@@ -233,9 +272,6 @@ angular.module('muzimaDevice.controllers', [])
                         $scope.groupedDetails[category] = $filter('filter')(deviceDetails, {"category": category});
                     }
                 });
-            $scope.editDeviceType = function () {
-                console.log("Editing device type");
-            }
         }])
     .controller('SettingsCtrl', ['$rootScope', '$scope', function ($rootScope, $scope) {
         $rootScope.navigation = "setting";

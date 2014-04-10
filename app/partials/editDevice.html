@@ -1,0 +1,86 @@
+<div class="container-fluid">
+    <div class="top-buffer row">
+        <div class="col-md-4 pull-left text-center">
+            <img height="300" width="auto" src="img/nexus-5.jpg" class="img-rounded">
+        </div>
+        <div class="col-md-8 pull-right">
+            <div class="container-fluid">
+                <div role="form">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" ng-model="device.name"
+                               class="form-control" id="name" placeholder="Enter name ...">
+                    </div>
+                    <div class="form-group">
+                        <label for="imei">IMEI</label>
+                        <input type="text" ng-model="device.imei"
+                               class="form-control" id="imei" placeholder="Enter imei ...">
+                    </div>
+                    <div class="form-group">
+                        <label for="sim">SIM</label>
+                        <input type="text" ng-model="device.sim"
+                               class="form-control" id="sim" placeholder="Enter sim ...">
+                    </div>
+                    <div class="form-group">
+                        <label for="birthdate">Purchased on</label>
+                        <input id="birthdate" type="text" class="form-control" datepicker-popup="dd-MMM-yyyy"
+                               ng-model="device.purchasedDate" is-open="opened" ng-required="true"
+                               close-text="Close"/>
+                    </div>
+                </div>
+                <div class="row last-row"></div>
+                <div class="top-buffer row">
+                    <div class="col-md-3"><strong>Device type</strong></div>
+                    <div class="col-md-9">{{device.deviceType.name}}</div>
+                </div>
+                <div class="row top-buffer"></div>
+                <div class="row last-row"></div>
+                <div class="top-buffer row">
+                    <div class="col-md-12 text-justify">{{device.deviceType.description}}</div>
+                </div>
+                <div class="row top-buffer"></div>
+                <div class="row last-row"></div>
+                <div class="top-buffer row">
+                    <div class="col-md-3"><strong>Assigned to</strong></div>
+                    <div class="col-md-5">N/A</div>
+                    <div class="col-md-4 pull-right text-right">
+                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                    </div>
+                </div>
+                <div class="row top-buffer"></div>
+                <div class="row last-row"></div>
+            </div>
+            <div class="container-fluid">
+                <div class="top-buffer row">
+                    <div class="col-md-12 button-save-row">
+                        <button type="submit" ng-click="savePerson()" class="btn btn-default">
+                            Save Device
+                        </button>
+                    </div>
+                </div>
+                <div class="row top-buffer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="top-buffer row">
+    <div class="col-md-12">
+        <tabset>
+            <tab heading="Specifications" active="tab.active">
+                <div class="container-fluid" ng-repeat="(key, values) in groupedDetails">
+                    <div class="head">{{key}}</div>
+                    <div class="container-fluid" ng-repeat="value in values">
+                        <div class="top-buffer row">
+                            <div class="col-md-2"><strong>{{value.subCategory}}</strong></div>
+                            <div class="col-md-10">{{value.categoryValue}}</div>
+                        </div>
+                        <div class="top-buffer row"></div>
+                    </div>
+                </div>
+            </tab>
+            <tab heading="Manage Device"></tab>
+            <tab heading="Device Log Data"></tab>
+        </tabset>
+    </div>
+</div>
+</div>

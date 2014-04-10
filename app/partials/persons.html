@@ -22,7 +22,7 @@
         <td class="text-center"><a href="#/person/{{person.id}}"><i class="glyphicon glyphicon-pencil"></i></a></td>
         <td>{{person.personNames[0].givenName}}</td>
         <td>{{person.personNames[0].familyName}}</td>
-        <td>{{person.birthdate}}</td>
+        <td>{{person.birthdate | date: 'dd-MMM-yyyy'}}</td>
         <td>{{person.gender}}</td>
     </tr>
     </tbody>

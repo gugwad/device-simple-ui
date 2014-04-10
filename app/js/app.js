@@ -10,6 +10,7 @@ muzimaDevice.config(['$routeProvider', function ($routeProvider) {
     $routeProvider.when('/person/:personId/edit', {templateUrl: 'partials/editPerson.html', controller: 'EditPersonCtrl'});
     $routeProvider.when('/persons', {templateUrl: 'partials/persons.html', controller: 'PersonsCtrl'});
     $routeProvider.when('/device/:deviceId', {templateUrl: 'partials/device.html', controller: 'DeviceCtrl'});
+    $routeProvider.when('/device/:deviceId/edit', {templateUrl: 'partials/editDevice.html', controller: 'EditDeviceCtrl'});
     $routeProvider.when('/devices', {templateUrl: 'partials/devices.html', controller: 'DevicesCtrl'});
     $routeProvider.when('/deviceType/:deviceTypeId', {templateUrl: 'partials/deviceType.html', controller: 'DeviceTypeCtrl'});
     $routeProvider.when('/deviceTypes', {templateUrl: 'partials/deviceTypes.html', controller: 'DeviceTypesCtrl'});
@@ -32,7 +33,7 @@ muzimaDevice.service('$person', function ($http, $dataProvider) {
             data: person,
             url: $dataProvider + "/api/person/" + person.id
         });
-    }
+    };
     return {
         searchPerson: searchPerson,
         getPerson: getPerson,
@@ -47,9 +48,17 @@ muzimaDevice.service('$device', function ($http, $dataProvider) {
     var getDevice = function (deviceId) {
         return $http.get($dataProvider + "/api/device/" + deviceId);
     };
+    var updateDevice = function(device) {
+        return $http({
+            method: "PUT",
+            data: device,
+            url: $dataProvider + "/api/device/" + device.id
+        });
+    };
     return {
         searchDevice: searchDevice,
-        getDevice: getDevice
+        getDevice: getDevice,
+        updateDevice: updateDevice
     }
 });
 
