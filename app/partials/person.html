@@ -10,7 +10,23 @@
                     <h3 class="panel-title">{{preferredName.familyName}}, {{preferredName.givenName}}</h3>
                 </div>
                 <div class="panel-body">
-                    Date of birth: {{person.birthdate | date:'dd-MMM-yyyy'}}
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>Gender</strong>
+                        </div>
+                        <div class="col-md-9">
+                            <ng-pluralize
+                            {{person.gender}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>Date of birth </strong>
+                        </div>
+                        <div class="col-md-9">
+                            {{person.birthdate | date:'dd-MMM-yyyy'}}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -36,7 +52,7 @@
                             </div>
                         </div>
                         <div class="row top-buffer"></div>
-                        <div ng-hide="$index == person.personNames.length - 1" class="row last-row"></div>
+                        <div ng-hide="$index == person.personNames.length - 1" class="row with-bottom-border"></div>
                     </div>
                 </tab>
                 <tab heading="Known Addresses">
@@ -72,7 +88,7 @@
                             <div class="col-md-4">{{personAddress.postalCode}}</div>
                         </div>
                         <div class="row top-buffer"></div>
-                        <div ng-hide="$index == person.personAddresses.length - 1" class="row last-row"></div>
+                        <div ng-hide="$index == person.personAddresses.length - 1" class="row with-bottom-border"></div>
                     </div>
                 </tab>
                 <tab heading="Device Assigned"></tab>

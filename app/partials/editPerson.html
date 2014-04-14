@@ -14,6 +14,20 @@
                         <div class="col-md-6">
                             <div role="form">
                                 <div class="form-group">
+                                    <label for="birthdate">Gender</label>
+                                    <select ng-model="person.gender">
+                                        <option value=""></option>
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div role="form">
+                                <div class="form-group">
                                     <label for="birthdate">Date of birth</label>
                                     <input id="birthdate" type="text" class="form-control" datepicker-popup="dd-MMM-yyyy"
                                            ng-model="person.birthdate" is-open="opened" ng-required="true"
@@ -82,7 +96,7 @@
                                 </tabset>
                                 <div class="container-fluid">
                                     <div class="row">
-                                        <div class="col-md-12 button-save-row">
+                                        <div class="col-md-12 no-left-padding">
                                             <button type="submit" ng-click="savePerson()" class="btn btn-default">
                                                 Save Person
                                             </button>
@@ -156,7 +170,7 @@
                                 </tabset>
                                 <div class="container-fluid">
                                     <div class="row">
-                                        <div class="col-md-12 button-save-row">
+                                        <div class="col-md-12 no-left-padding">
                                             <button type="submit" ng-click="savePerson()" class="btn btn-default">
                                                 Save Person
                                             </button>

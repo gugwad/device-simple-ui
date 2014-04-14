@@ -80,7 +80,7 @@ div.head a.no-decoration:hover {
     margin-top: 10px;
 }
 
-.last-row {
+.with-bottom-border {
     border-style: solid;
     border-width: 1px;
     border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #CCCCCC;;
@@ -91,6 +91,10 @@ div.head a.no-decoration:hover {
     cursor: default;
 }
 
-.button-save-row {
+.no-left-padding {
     padding-left: 0px;
+}
+
+.no-right-padding {
+    padding-right: 0px;
 }

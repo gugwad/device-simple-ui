@@ -3,8 +3,8 @@
 /* Device Controllers */
 
 angular.module('muzimaDevice.controllers')
-    .controller('DevicesCtrl', ['$device', '$rootScope', '$scope',
-        function ($device, $rootScope, $scope) {
+    .controller('DevicesCtrl', ['$device', '$rootScope', '$scope', '$location',
+        function ($device, $rootScope, $scope, $location) {
             $rootScope.navigation = "device";
             $scope.count = 0;
             $scope.pageSize = 10;
@@ -35,6 +35,10 @@ angular.module('muzimaDevice.controllers')
                         });
                 }
             }, true);
+
+            $scope.redirectCreateDevice = function() {
+                $location.path("/device");
+            };
         }])
     .controller('DeviceCtrl', ['$device', '$filter', '$rootScope', '$scope', '$routeParams',
         function ($device, $filter, $rootScope, $scope, $routeParams) {

@@ -3,8 +3,8 @@
 /* Person Controllers */
 
 angular.module('muzimaDevice.controllers')
-    .controller('PersonsCtrl', ['$person', '$rootScope', '$scope',
-        function ($person, $rootScope, $scope) {
+    .controller('PersonsCtrl', ['$person', '$rootScope', '$scope', '$location',
+        function ($person, $rootScope, $scope, $location) {
             $rootScope.navigation = "person";
             $scope.count = 0;
             $scope.pageSize = 10;
@@ -35,6 +35,10 @@ angular.module('muzimaDevice.controllers')
                         });
                 }
             }, true);
+
+            $scope.redirectCreatePerson = function() {
+                $location.path("/person");
+            };
         }])
     .controller('PersonCtrl', ['$person', '$filter', '$rootScope', '$scope', '$routeParams',
         function ($person, $filter, $rootScope, $scope, $routeParams) {
@@ -181,6 +185,18 @@ angular.module('muzimaDevice.controllers')
                         $scope.person["personAddresses"][0].active = true;
                     }
                 });
+
+            $scope.$watch('person["gender"]', function (newValue, oldValue) {
+                if (newValue != oldValue) {
+                    if (newValue === 'M') {
+                        $scope.male = true;
+                        $scope.female = false;
+                    } else if (newValue === 'F') {
+                        $scope.female = true;
+                        $scope.male = false;
+                    }
+                }
+            }, true);
 
             $scope.addPersonName = function () {
                 if ($scope.person.hasOwnProperty("personNames")) {

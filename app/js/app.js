@@ -17,7 +17,7 @@ muzimaDevice.config(['$routeProvider', function ($routeProvider) {
     $routeProvider.when('/deviceTypes', {templateUrl: 'partials/deviceTypes.html', controller: 'DeviceTypesCtrl'});
     $routeProvider.when('/settings', {templateUrl: 'partials/settings.html', controller: 'SettingsCtrl'});
     $routeProvider.when('/help', {templateUrl: 'partials/help.html', controller: 'HelpCtrl'});
-    $routeProvider.otherwise('/person');
+    $routeProvider.otherwise('/home');
 }]);
 
 muzimaDevice.value("$dataProvider", "http://localhost:8080/device-simple");
