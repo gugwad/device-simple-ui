@@ -10,10 +10,13 @@ muzimaDevice.config(['$routeProvider', function ($routeProvider) {
     $routeProvider.when('/person/:personId', {templateUrl: 'partials/person.html', controller: 'PersonCtrl'});
     $routeProvider.when('/person/:personId/edit', {templateUrl: 'partials/editPerson.html', controller: 'EditPersonCtrl'});
     $routeProvider.when('/persons', {templateUrl: 'partials/persons.html', controller: 'PersonsCtrl'});
+    $routeProvider.when('/device/', {templateUrl: 'partials/createDevice.html', controller: 'CreateDeviceCtrl'});
     $routeProvider.when('/device/:deviceId', {templateUrl: 'partials/device.html', controller: 'DeviceCtrl'});
     $routeProvider.when('/device/:deviceId/edit', {templateUrl: 'partials/editDevice.html', controller: 'EditDeviceCtrl'});
     $routeProvider.when('/devices', {templateUrl: 'partials/devices.html', controller: 'DevicesCtrl'});
+    $routeProvider.when('/deviceType/', {templateUrl: 'partials/createDeviceType.html', controller: 'CreateDeviceTypeCtrl'});
     $routeProvider.when('/deviceType/:deviceTypeId', {templateUrl: 'partials/deviceType.html', controller: 'DeviceTypeCtrl'});
+    $routeProvider.when('/deviceType/:deviceTypeId/edit', {templateUrl: 'partials/editDeviceType.html', controller: 'EditDeviceTypeCtrl'});
     $routeProvider.when('/deviceTypes', {templateUrl: 'partials/deviceTypes.html', controller: 'DeviceTypesCtrl'});
     $routeProvider.when('/settings', {templateUrl: 'partials/settings.html', controller: 'SettingsCtrl'});
     $routeProvider.when('/help', {templateUrl: 'partials/help.html', controller: 'HelpCtrl'});
@@ -23,7 +26,15 @@ muzimaDevice.config(['$routeProvider', function ($routeProvider) {
 muzimaDevice.value("$dataProvider", "http://localhost:8080/device-simple");
 muzimaDevice.service('$person', function ($http, $dataProvider) {
     var searchPerson = function (search, pageSize, currentPage) {
-        return $http.get($dataProvider + "/api/person?query=" + search + "&max=" + pageSize + "&offset=" + (pageSize * (currentPage - 1)));
+        return $http({
+            method: "GET",
+            params: {
+                query: search,
+                max: pageSize,
+                offset: (pageSize * (currentPage - 1))
+            },
+            url: $dataProvider + "/api/person"
+        });
     };
     var getPerson = function (personId) {
         return $http.get($dataProvider + "/api/person/" + personId);
@@ -52,7 +63,15 @@ muzimaDevice.service('$person', function ($http, $dataProvider) {
 
 muzimaDevice.service('$device', function ($http, $dataProvider) {
     var searchDevice = function (search, pageSize, currentPage) {
-        return $http.get($dataProvider + "/api/device?query=" + search + "&max=" + pageSize + "&offset=" + (pageSize * (currentPage - 1)));
+        return $http({
+            method: "GET",
+            params: {
+                query: search,
+                max: pageSize,
+                offset: (pageSize * (currentPage - 1))
+            },
+            url: $dataProvider + "/api/device"
+        });
     };
     var getDevice = function (deviceId) {
         return $http.get($dataProvider + "/api/device/" + deviceId);
@@ -64,23 +83,55 @@ muzimaDevice.service('$device', function ($http, $dataProvider) {
             url: $dataProvider + "/api/device/" + device.id
         });
     };
+    var saveDevice = function(device) {
+        return $http({
+            method: "POST",
+            data: device,
+            url: $dataProvider + "/api/device/"
+        });
+    };
     return {
         searchDevice: searchDevice,
         getDevice: getDevice,
-        updateDevice: updateDevice
+        updateDevice: updateDevice,
+        saveDevice: saveDevice
     }
 });
 
 muzimaDevice.service('$deviceType', function ($http, $dataProvider) {
     var searchDeviceType = function (search, pageSize, currentPage) {
-        return $http.get($dataProvider + "/api/deviceType?query=" + search + "&max=" + pageSize + "&offset=" + (pageSize * (currentPage - 1)));
+        return $http({
+            method: "GET",
+            params: {
+                query: search,
+                max: pageSize,
+                offset: (pageSize * (currentPage - 1))
+            },
+            url: $dataProvider + "/api/deviceType"
+        });
     };
     var getDeviceType = function (deviceTypeId) {
         return $http.get($dataProvider + "/api/deviceType/" + deviceTypeId);
     };
+    var updateDeviceType = function(deviceType) {
+        return $http({
+            method: "PUT",
+            data: deviceType,
+            url: $dataProvider + "/api/deviceType/" + device.id
+        });
+    };
+    var saveDeviceType = function(deviceType) {
+        return $http({
+            method: "POST",
+            data: deviceType,
+            url: $dataProvider + "/api/deviceType/"
+        });
+    };
     return {
         searchDeviceType: searchDeviceType,
-        getDeviceType: getDeviceType
+        getDeviceType: getDeviceType,
+        updateDeviceType: updateDeviceType,
+        saveDeviceType: saveDeviceType
     }
 });
 

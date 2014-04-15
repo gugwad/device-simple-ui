@@ -56,8 +56,32 @@ angular.module('muzimaDevice.controllers')
                     }
                 });
         }])
-    .controller('EditDeviceCtrl', ['$device', '$filter', '$rootScope', '$scope', '$routeParams', '$location',
-        function ($device, $filter, $rootScope, $scope, $routeParams, $location) {
+    .controller('CreateDeviceCtrl', ['$device', '$deviceType', '$filter', '$rootScope', '$scope', '$location',
+        function ($device, $deviceType, $filter, $rootScope, $scope, $location) {
+
+            $scope.device = {};
+
+            var search = "";
+            $deviceType.searchDeviceType(search, 100, 1)
+                .success(function (data) {
+                    $scope.deviceTypes = data.results;
+                });
+
+            $scope.saveDevice = function () {
+                var purchasedDate = $scope.device["purchasedDate"];
+                if (purchasedDate instanceof Date && !isNaN(purchasedDate.valueOf())) {
+                    $scope.device["purchasedDate"] = purchasedDate.getTime();
+                }
+                $device.updateDevice($scope.device)
+                    .success(function (data) {
+                        if (data.hasOwnProperty("id")) {
+                            $location.path("/device/" + data["id"]);
+                        }
+                    });
+            };
+        }])
+    .controller('EditDeviceCtrl', ['$device', '$deviceType', '$filter', '$rootScope', '$scope', '$routeParams', '$location',
+        function ($device, $deviceType, $filter, $rootScope, $scope, $routeParams, $location) {
             $scope.device = {};
             $scope.format = "dd-MMM-yyyy";
             $scope.deviceId = $routeParams.deviceId;
@@ -74,18 +98,28 @@ angular.module('muzimaDevice.controllers')
                     }
                 });
 
+            $scope.$watch('device.deviceType', function(newValue, oldValue) {
+                if (newValue != oldValue) {
+
+                }
+            });
+
+            var search = "";
+            $deviceType.searchDeviceType(search, 100, 1)
+                .success(function (data) {
+                    $scope.deviceTypes = data.results;
+                });
+
             $scope.saveDevice = function () {
+                var purchasedDate = $scope.device["purchasedDate"];
+                if (purchasedDate instanceof Date && !isNaN(purchasedDate.valueOf())) {
+                    $scope.device["purchasedDate"] = purchasedDate.getTime();
+                }
                 $device.updateDevice($scope.device)
                     .success(function (data) {
                         if (data.hasOwnProperty("id")) {
                             $location.path("/device/" + data["id"]);
                         }
                     });
-            };
-
-            $scope.openCalendar = function ($event) {
-                $event.preventDefault();
-                $event.stopPropagation();
-                $scope.opened = true;
             };
         }]);
