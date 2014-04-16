@@ -67,14 +67,22 @@
     <div class="col-md-12">
         <tabset>
             <tab heading="Specifications" active="tab.active">
-                <div class="container-fluid" ng-repeat="(key, values) in groupedDetails">
-                    <div class="head">{{key}}</div>
-                    <div class="container-fluid" ng-repeat="value in values">
-                        <div class="top-buffer row">
-                            <div class="col-md-2"><strong>{{value.subCategory}}</strong></div>
-                            <div class="col-md-10">{{value.categoryValue}}</div>
+                <div class="container-fluid">
+                    <div class="row" ng-repeat="(key, values) in groupedDetails">
+                        <div class="container-fluid">
+                            <div class="row head">
+                                <div class="col-md-8">{{key}}</div>
+                                <div class="col-md-4 pull-right text-right">
+                                    <a class="no-decoration" ng-click="editDeviceType()">
+                                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="top-buffer bottom-buffer row" ng-repeat="value in values">
+                                <div class="col-md-2"><strong>{{value.subCategory}}</strong></div>
+                                <div class="col-md-10">{{value.categoryValue}}</div>
+                            </div>
                         </div>
-                        <div class="top-buffer row"></div>
                     </div>
                 </div>
             </tab>

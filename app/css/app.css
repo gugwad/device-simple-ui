@@ -80,6 +80,10 @@ div.head a.no-decoration:hover {
     margin-top: 10px;
 }
 
+.bottom-buffer {
+    margin-bottom: 10px;
+}
+
 .with-bottom-border {
     border-style: solid;
     border-width: 1px;
