@@ -5,37 +5,41 @@
 angular.module('muzimaDevice.controllers')
     .controller('DeviceTypesCtrl', ['$deviceType', '$rootScope', '$scope', '$location',
         function ($deviceType, $rootScope, $scope, $location) {
-            $rootScope.navigation = "deviceType";
+            // initialize the list of items to empty object (with count = 0 obviously)
+            $scope.deviceTypes = {};
+            // initialize the paging information
             $scope.count = 0;
             $scope.pageSize = 10;
             $rootScope.currentPage = 1;
-            $deviceType.searchDeviceType($scope.search, $scope.pageSize, $rootScope.currentPage)
-                .success(function (data) {
-                    $scope.deviceTypes = data.results;
-                    $scope.count = data.count;
-                });
+            // initialize the name of the navigation
+            $rootScope.navigation = "deviceType";
 
             $scope.$watch('currentPage', function (newValue, oldValue) {
                 if (newValue != oldValue) {
-                    $deviceType.searchDeviceType($scope.search, $scope.pageSize, newValue)
-                        .success(function (data) {
-                            $scope.deviceTypes = data.results;
-                            $scope.count = data.count;
-                        });
+                    if (newValue === '') {
+                        $scope.count = 0;
+                        $scope.deviceTypes = {};
+                    } else {
+                        $deviceType.searchDeviceType($scope.search, $scope.pageSize, newValue)
+                            .success(function (data) {
+                                $scope.count = data.count;
+                                $scope.deviceTypes = data.results;
+                            });
+                    }
                 }
             }, true);
 
             $scope.$watch('search', function (newValue, oldValue) {
                 if (newValue != oldValue) {
                     if (newValue === '') {
-                        $scope.deviceTypes = {};
                         $scope.count = 0;
+                        $scope.deviceTypes = {};
                     } else {
                         $rootScope.currentPage = 1;
                         $deviceType.searchDeviceType(newValue, $scope.pageSize, $rootScope.currentPage)
                             .success(function (data) {
-                                $scope.deviceTypes = data.results;
                                 $scope.count = data.count;
+                                $scope.deviceTypes = data.results;
                             });
                     }
                 }
@@ -65,18 +69,8 @@ angular.module('muzimaDevice.controllers')
 
             $scope.device = {};
 
-            var search = "";
-            $deviceType.searchDeviceType(search, 100, 1)
-                .success(function (data) {
-                    $scope.deviceTypes = data.results;
-                });
-
             $scope.saveDevice = function () {
-                var purchasedDate = $scope.device["purchasedDate"];
-                if (purchasedDate instanceof Date && !isNaN(purchasedDate.valueOf())) {
-                    $scope.device["purchasedDate"] = purchasedDate.getTime();
-                }
-                $device.updateDevice($scope.device)
+                $deviceType.updateDevice($scope.device)
                     .success(function (data) {
                         if (data.hasOwnProperty("id")) {
                             $location.path("/device/" + data["id"]);

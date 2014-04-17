@@ -5,15 +5,14 @@
 angular.module('muzimaDevice.controllers')
     .controller('DevicesCtrl', ['$device', '$rootScope', '$scope', '$location',
         function ($device, $rootScope, $scope, $location) {
-            $rootScope.navigation = "device";
+            // initialize the paging information
             $scope.count = 0;
             $scope.pageSize = 10;
             $rootScope.currentPage = 1;
-            $device.searchDevice($scope.search, $scope.pageSize, $rootScope.currentPage)
-                .success(function (data) {
-                    $scope.devices = data.results;
-                    $scope.count = data.count;
-                });
+            // initialize the device list
+            $scope.devices = {};
+            // initialize the navigation information
+            $rootScope.navigation = "device";
 
             $scope.$watch('currentPage', function (newValue, oldValue) {
                 if (newValue != oldValue) {
