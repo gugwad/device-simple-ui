@@ -67,12 +67,12 @@
                             <div class="row head">
                                 <div class="col-md-8">{{key}}</div>
                                 <div class="col-md-4 pull-right text-right">
-                                    <a class="no-decoration" ng-click="editDeviceType()">
+                                    <a class="no-decoration" href="#/deviceType/{{device.deviceType.id}}/edit">
                                         <span class="glyphicon glyphicon-pencil"></span> Edit
                                     </a>
                                 </div>
                             </div>
-                            <div class="top-buffer bottom-buffer row" ng-repeat="value in values">
+                            <div class="top-buffer bottom-buffer row" ng-repeat="value in values | orderBy: 'id'">
                                 <div class="col-md-2"><strong>{{value.subCategory}}</strong></div>
                                 <div class="col-md-10">{{value.categoryValue}}</div>
                             </div>

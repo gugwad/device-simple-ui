@@ -117,7 +117,7 @@ muzimaDevice.service('$deviceType', function ($http, $dataProvider) {
         return $http({
             method: "PUT",
             data: deviceType,
-            url: $dataProvider + "/api/deviceType/" + device.id
+            url: $dataProvider + "/api/deviceType/" + deviceType.id
         });
     };
     var saveDeviceType = function(deviceType) {

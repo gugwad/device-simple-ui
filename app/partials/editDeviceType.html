@@ -22,30 +22,72 @@
         </div>
     </div>
 </div>
-<div class="top-buffer row">
-    <div class="col-md-12">
-        <tabset>
-            <tab heading="Specifications" active="tab.active">
-                <div class="container-fluid">
-                    <div class="row" ng-repeat="(key, values) in groupedDetails">
-                        <div class="container-fluid">
-                            <div class="row head">
-                                <div class="col-md-8">{{key}}</div>
-                                <div class="col-md-4 pull-right text-right">
-                                    <a class="no-decoration" ng-click="editDeviceType()">
-                                        <span class="glyphicon glyphicon-pencil"></span> Edit
-                                    </a>
-                                </div>
+<div class="container-fluid">
+    <div class="top-buffer row">
+        <div class="col-md-12">
+            <tabset>
+                <tab heading="Specifications" active="tab.active">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <tabset>
+                                    <tab heading="{{category.name}}" ng-repeat="category in categories | orderBy: 'name'"
+                                         active="category.active">
+                                        <div role="form">
+                                            <div class="form-group">
+                                                <label for="category.name">Category Name</label>
+                                                <input type="text" ng-model="category.name"
+                                                       class="form-control" id="category.name"
+                                                       placeholder="Enter category name ...">
+                                            </div>
+                                        </div>
+                                        <div class="container-fluid">
+                                            <div class="row top-buffer">
+                                                <div class="col-md-4"><strong>Sub Category Name</strong></div>
+                                                <div class="col-md-8"><strong>Category Value</strong></div>
+                                            </div>
+                                            <div class="row top-buffer" ng-repeat="categoryValue in groupedDetails[category.name] | orderBy: 'id'">
+                                                <div class="col-md-4">
+                                                    <label for="subCategory.name" class="sr-only">Sub Category Name</label>
+                                                    <input type="text" ng-model="categoryValue.subCategory"
+                                                           class="form-control" id="subCategory.name"
+                                                           placeholder="Enter sub category name ...">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label for="category.value" class="sr-only">Value</label>
+                                                    <input type="text" ng-model="categoryValue.categoryValue"
+                                                           class="form-control" id="category.value"
+                                                           placeholder="Enter category value ...">
+                                                </div>
+                                            </div>
+                                            <div class="row top-buffer"></div>
+                                            <div class="row top-buffer bottom-buffer">
+                                                <div class="col-md-4">
+                                                    <a class="no-decoration" ng-click="addSubCategory()">
+                                                        <span class="glyphicon glyphicon-plus"></span> Add Sub Category
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </tab>
+                                    <tab ng-click="addCategory()">
+                                        <tab-heading>
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                        </tab-heading>
+                                    </tab>
+                                </tabset>
                             </div>
-                            <div class="top-buffer bottom-buffer row" ng-repeat="value in values">
-                                <div class="col-md-2"><strong>{{value.subCategory}}</strong></div>
-                                <div class="col-md-10">{{value.categoryValue}}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 bottom-buffer">
+                                <button type="submit" ng-click="saveDeviceType()" class="btn btn-default">
+                                    Save Device
+                                </button>
                             </div>
                         </div>
                     </div>
-                </div>
-            </tab>
-        </tabset>
+                </tab>
+            </tabset>
+        </div>
     </div>
-</div>
 </div>

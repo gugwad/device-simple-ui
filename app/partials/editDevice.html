@@ -29,9 +29,8 @@
                     </div>
                     <div class="form-group">
                         <label for="deviceType">Device type</label>
-                        <select id="deviceType" class="form-control" ng-model="device.deviceType"
-                                ng-options="deviceType.name for deviceType in deviceTypes">
-                        </select>
+                        <input type="text" id="deviceType" ng-model="device.deviceType"
+                               typeahead="deviceType as deviceType.name for deviceType in deviceTypes | limitTo:8" class="form-control">
                     </div>
                 </div>
                 <div class="row with-bottom-border"></div>
@@ -72,13 +71,8 @@
                         <div class="container-fluid">
                             <div class="row head">
                                 <div class="col-md-8">{{key}}</div>
-                                <div class="col-md-4 pull-right text-right">
-                                    <a class="no-decoration" ng-click="editDeviceType()">
-                                        <span class="glyphicon glyphicon-pencil"></span> Edit
-                                    </a>
-                                </div>
                             </div>
-                            <div class="top-buffer bottom-buffer row" ng-repeat="value in values">
+                            <div class="top-buffer bottom-buffer row" ng-repeat="value in values | orderBy: 'id'">
                                 <div class="col-md-2"><strong>{{value.subCategory}}</strong></div>
                                 <div class="col-md-10">{{value.categoryValue}}</div>
                             </div>

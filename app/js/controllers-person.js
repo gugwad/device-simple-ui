@@ -148,7 +148,6 @@ angular.module('muzimaDevice.controllers')
     .controller('EditPersonCtrl', ['$person', '$filter', '$rootScope', '$scope', '$routeParams', '$location',
         function ($person, $filter, $rootScope, $scope, $routeParams, $location) {
             $scope.person = {};
-            $scope.format = "dd-MMM-yyyy";
             $scope.personId = $routeParams.personId;
             $person.getPerson($scope.personId)
                 .success(function (data) {

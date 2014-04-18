@@ -13,24 +13,26 @@ angular.module('muzimaDevice.controllers')
             $scope.devices = {};
             // initialize the navigation information
             $rootScope.navigation = "device";
-
+            // need to watch the current page
+            // * update the list when user press the paging navigation part
             $scope.$watch('currentPage', function (newValue, oldValue) {
                 if (newValue != oldValue) {
                     $device.searchDevice($scope.search, $scope.pageSize, newValue)
                         .success(function (data) {
-                            $scope.devices = data.results;
                             $scope.count = data.count;
+                            $scope.devices = data.results;
                         });
                 }
             }, true);
-
+            // need to watch the search field
+            // * update the list when user enter search term
             $scope.$watch('search', function (newValue, oldValue) {
                 if (newValue != oldValue) {
                     $rootScope.currentPage = 1;
                     $device.searchDevice(newValue, $scope.pageSize, $rootScope.currentPage)
                         .success(function (data) {
-                            $scope.devices = data.results;
                             $scope.count = data.count;
+                            $scope.devices = data.results;
                         });
                 }
             }, true);
@@ -45,13 +47,28 @@ angular.module('muzimaDevice.controllers')
             $device.getDevice($scope.deviceId)
                 .success(function (data) {
                     $scope.device = data;
+                    // device details will be grouped by the category
+                    // device detail have: { category, subCategory, categoryValue}
                     $scope.groupedDetails = {};
                     var deviceType = data["deviceType"];
-                    var deviceDetails = deviceType["deviceDetails"];
-                    for (var i = 0; i < deviceDetails.length; i++) {
-                        var deviceDetail = deviceDetails[i];
-                        var category = deviceDetail["category"];
-                        $scope.groupedDetails[category] = $filter('filter')(deviceDetails, {"category": category});
+                    if (deviceType.hasOwnProperty("deviceDetails")) {
+                        var categories = [];
+                        var deviceDetails = deviceType["deviceDetails"];
+                        // get all the categories
+                        angular.forEach(deviceDetails, function (deviceDetail) {
+                            var category = deviceDetail["category"];
+                            var filteredCategories = $filter('filter')(categories, {"name": category});
+                            if (filteredCategories.length == 0) {
+                                categories.push({
+                                    name: category
+                                });
+                            }
+                        });
+
+                        $scope.categories = $filter('orderBy')(categories, 'name');
+                        angular.forEach($scope.categories, function (category) {
+                            $scope.groupedDetails[category.name] = $filter('filter')(deviceDetails, {"category": category.name});
+                        });
                     }
                 });
         }])
@@ -59,12 +76,40 @@ angular.module('muzimaDevice.controllers')
         function ($device, $deviceType, $filter, $rootScope, $scope, $location) {
 
             $scope.device = {};
+            $scope.groupedDetails = {};
 
-            var search = "";
-            $deviceType.searchDeviceType(search, 100, 1)
+            // TODO: hacky to get the list of device type for the typeahead directive
+            // seems to be related to this issue: https://github.com/angular-ui/bootstrap/issues/949
+            $deviceType.searchDeviceType("", 9999, 1)
                 .success(function (data) {
                     $scope.deviceTypes = data.results;
                 });
+
+            $scope.$watch('device.deviceType', function(newValue, oldValue) {
+                if (newValue != oldValue) {
+                    if (newValue.hasOwnProperty("deviceDetails")) {
+                        var categories = [];
+                        var deviceDetails = newValue["deviceDetails"];
+                        // get all the categories
+                        angular.forEach(deviceDetails, function (deviceDetail) {
+                            var category = deviceDetail["category"];
+                            var filteredCategories = $filter('filter')(categories, {"name": category});
+                            if (filteredCategories.length == 0) {
+                                categories.push({
+                                    name: category
+                                });
+                            }
+                        });
+
+                        $scope.categories = $filter('orderBy')(categories, 'name');
+                        angular.forEach($scope.categories, function (category) {
+                            $scope.groupedDetails[category.name] = $filter('filter')(deviceDetails, {"category": category.name});
+                        });
+                    } else {
+                        $scope.groupedDetails = {};
+                    }
+                }
+            });
 
             $scope.saveDevice = function () {
                 var purchasedDate = $scope.device["purchasedDate"];
@@ -81,33 +126,67 @@ angular.module('muzimaDevice.controllers')
         }])
     .controller('EditDeviceCtrl', ['$device', '$deviceType', '$filter', '$rootScope', '$scope', '$routeParams', '$location',
         function ($device, $deviceType, $filter, $rootScope, $scope, $routeParams, $location) {
+
             $scope.device = {};
-            $scope.format = "dd-MMM-yyyy";
+            $scope.groupedDetails = {};
+
             $scope.deviceId = $routeParams.deviceId;
             $device.getDevice($scope.deviceId)
                 .success(function (data) {
                     $scope.device = data;
                     $scope.groupedDetails = {};
                     var deviceType = data["deviceType"];
-                    var deviceDetails = deviceType["deviceDetails"];
-                    for (var i = 0; i < deviceDetails.length; i++) {
-                        var deviceDetail = deviceDetails[i];
-                        var category = deviceDetail["category"];
-                        $scope.groupedDetails[category] = $filter('filter')(deviceDetails, {"category": category});
+                    if (deviceType.hasOwnProperty("deviceDetails")) {
+                        var categories = [];
+                        var deviceDetails = deviceType["deviceDetails"];
+                        // get all the categories
+                        angular.forEach(deviceDetails, function (deviceDetail) {
+                            var category = deviceDetail["category"];
+                            var filteredCategories = $filter('filter')(categories, {"name": category});
+                            if (filteredCategories.length == 0) {
+                                categories.push({
+                                    name: category
+                                });
+                            }
+                        });
+
+                        $scope.categories = $filter('orderBy')(categories, 'name');
+                        angular.forEach($scope.categories, function (category) {
+                            $scope.groupedDetails[category.name] = $filter('filter')(deviceDetails, {"category": category.name});
+                        });
                     }
+                });
+
+            $deviceType.searchDeviceType("", 9999, 1)
+                .success(function (data) {
+                    $scope.deviceTypes = data.results;
                 });
 
             $scope.$watch('device.deviceType', function(newValue, oldValue) {
                 if (newValue != oldValue) {
+                    if (newValue.hasOwnProperty("deviceDetails")) {
+                        var categories = [];
+                        var deviceDetails = newValue["deviceDetails"];
+                        // get all the categories
+                        angular.forEach(deviceDetails, function (deviceDetail) {
+                            var category = deviceDetail["category"];
+                            var filteredCategories = $filter('filter')(categories, {"name": category});
+                            if (filteredCategories.length == 0) {
+                                categories.push({
+                                    name: category
+                                });
+                            }
+                        });
 
+                        $scope.categories = $filter('orderBy')(categories, 'name');
+                        angular.forEach($scope.categories, function (category) {
+                            $scope.groupedDetails[category.name] = $filter('filter')(deviceDetails, {"category": category.name});
+                        });
+                    } else {
+                        $scope.groupedDetails = {};
+                    }
                 }
             });
-
-            var search = "";
-            $deviceType.searchDeviceType(search, 100, 1)
-                .success(function (data) {
-                    $scope.deviceTypes = data.results;
-                });
 
             $scope.saveDevice = function () {
                 var purchasedDate = $scope.device["purchasedDate"];
