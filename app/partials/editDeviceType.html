@@ -46,7 +46,7 @@
                                                 <div class="col-md-4"><strong>Sub Category Name</strong></div>
                                                 <div class="col-md-8"><strong>Category Value</strong></div>
                                             </div>
-                                            <div class="row top-buffer" ng-repeat="categoryValue in groupedDetails[category.name] | orderBy: 'id'">
+                                            <div class="row top-buffer" ng-repeat="categoryValue in groupedDetails[category.id] | orderBy: 'id'">
                                                 <div class="col-md-4">
                                                     <label for="subCategory.name" class="sr-only">Sub Category Name</label>
                                                     <input type="text" ng-model="categoryValue.subCategory"
@@ -80,7 +80,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 bottom-buffer">
-                                <button type="submit" ng-click="saveDeviceType()" class="btn btn-default">
+                                <button type="submit" ng-click="updateDeviceType()" class="btn btn-default">
                                     Save Device
                                 </button>
                             </div>

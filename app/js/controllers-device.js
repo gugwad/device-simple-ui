@@ -116,7 +116,7 @@ angular.module('muzimaDevice.controllers')
                 if (purchasedDate instanceof Date && !isNaN(purchasedDate.valueOf())) {
                     $scope.device["purchasedDate"] = purchasedDate.getTime();
                 }
-                $device.updateDevice($scope.device)
+                $device.saveDevice($scope.device)
                     .success(function (data) {
                         if (data.hasOwnProperty("id")) {
                             $location.path("/device/" + data["id"]);
@@ -188,7 +188,7 @@ angular.module('muzimaDevice.controllers')
                 }
             });
 
-            $scope.saveDevice = function () {
+            $scope.updateDevice = function () {
                 var purchasedDate = $scope.device["purchasedDate"];
                 if (purchasedDate instanceof Date && !isNaN(purchasedDate.valueOf())) {
                     $scope.device["purchasedDate"] = purchasedDate.getTime();

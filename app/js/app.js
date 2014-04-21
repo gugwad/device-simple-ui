@@ -50,7 +50,7 @@ muzimaDevice.service('$person', function ($http, $dataProvider) {
         return $http({
             method: "POST",
             data: person,
-            url: $dataProvider + "/api/person/"
+            url: $dataProvider + "/api/person"
         });
     };
     return {
@@ -87,7 +87,7 @@ muzimaDevice.service('$device', function ($http, $dataProvider) {
         return $http({
             method: "POST",
             data: device,
-            url: $dataProvider + "/api/device/"
+            url: $dataProvider + "/api/device"
         });
     };
     return {
@@ -124,7 +124,7 @@ muzimaDevice.service('$deviceType', function ($http, $dataProvider) {
         return $http({
             method: "POST",
             data: deviceType,
-            url: $dataProvider + "/api/deviceType/"
+            url: $dataProvider + "/api/deviceType"
         });
     };
     return {
