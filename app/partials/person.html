@@ -93,7 +93,34 @@
                         <div ng-hide="$index == person.personAddresses.length - 1" class="row with-bottom-border"></div>
                     </div>
                 </tab>
-                <tab heading="Device Assigned"></tab>
+                <tab heading="Device Assigned">
+                    <div class="container-fluid">
+                        <div class="row top-buffer bottom-buffer" ng-hide="person.devices.length">
+                            <div class="col-md-12">
+                                No device assigned for this person!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container-fluid" ng-repeat="device in person.devices">
+                        <div class="top-buffer head row">
+                            <div class="col-md-12">{{device.name}}</div>
+                        </div>
+                        <div class="top-buffer row">
+                            <div class="col-md-2"><strong>SIM</strong></div>
+                            <div class="col-md-4">{{device.sim}}</div>
+                            <div class="col-md-2"><strong>IMEI</strong></div>
+                            <div class="col-md-4">{{device.imei}}</div>
+                        </div>
+                        <div class="top-buffer row">
+                            <div class="col-md-2"><strong>Purchased on</strong></div>
+                            <div class="col-md-4">{{device.purchasedDate | date:'dd-MMM-yyyy'}}</div>
+                            <div class="col-md-2"><strong>Device type</strong></div>
+                            <div class="col-md-4">{{device.deviceType.name}}</div>
+                        </div>
+                        <div class="row top-buffer"></div>
+                        <div ng-hide="$index == person.personAddresses.length - 1" class="row with-bottom-border"></div>
+                    </div>
+                </tab>
             </tabset>
         </div>
     </div>

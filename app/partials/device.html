@@ -44,11 +44,34 @@
                 </div>
                 <div class="row top-buffer"></div>
                 <div class="row with-bottom-border"></div>
-                <div class="top-buffer row">
+                <div class="top-buffer row" ng-hide="assign">
                     <div class="col-md-3"><strong>Assigned to</strong></div>
                     <div class="col-md-5">N/A</div>
                     <div class="col-md-4 pull-right text-right">
-                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                        <a class="no-decoration" ng-click="editAssignment()">
+                            <span class="glyphicon glyphicon-pencil"></span> Edit
+                        </a>
+                    </div>
+                </div>
+                <div class="top-buffer row" ng-show="assign">
+                    <div class="col-md-3" style="margin-top: 8px"><strong>Assigned to</strong></div>
+                    <div class="col-md-7">
+                        <form class="form-inline" role="form">
+                            <div class="form-group">
+                                <label class="sr-only" for="person">Assignee</label>
+                                <input type="text" id="person" ng-model="assignment.person"
+                                       typeahead="person as person.name for person in searchPerson($viewValue) | limitTo:8"
+                                       class="form-control" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row top-buffer" ng-show="assign"></div>
+                <div class="row with-bottom-border" ng-show="assign"></div>
+                <div class="top-buffer row" ng-show="assign">
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-default" ng-click="saveAssignment()">Save</button>
+                        <button type="submit" class="btn btn-default" ng-click="cancelAssignment()">Cancel</button>
                     </div>
                 </div>
                 <div class="row top-buffer"></div>
@@ -80,7 +103,47 @@
                     </div>
                 </div>
             </tab>
-            <tab heading="Manage Device"></tab>
+            <tab heading="Manage Device">
+                <div class="container-fluid head">
+                    <div class="row">
+                        <div class="col-md-12">Management Functions</div>
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    <div class="top-buffer row">
+                        <div class="col-md-3"><strong>Registration ID</strong></div>
+                        <div class="col-md-9">NA</div>
+                    </div>
+                    <div class="row top-buffer"></div>
+                    <div class="row with-bottom-border"></div>
+                    <div class="top-buffer row">
+                        <div class="col-md-3"><strong>Status</strong></div>
+                        <div class="col-md-9">NA</div>
+                    </div>
+                    <div class="row top-buffer"></div>
+                    <div class="row with-bottom-border"></div>
+                    <div class="top-buffer row">
+                        <div class="col-md-3"><strong>Location</strong></div>
+                        <div class="col-md-9">Unknown</div>
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    <div class="top-buffer row">
+                        <div class="col-md-12 no-left-padding">
+                            <button type="submit" ng-click="updateDevice()" class="btn btn-default">
+                                Lock Device
+                            </button>
+                            <button type="submit" ng-click="updateDevice()" class="btn btn-default">
+                                Wipe Device
+                            </button>
+                            <button type="submit" ng-click="updateDevice()" class="btn btn-default">
+                                Ping Device
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row top-buffer"></div>
+                </div>
+            </tab>
             <tab heading="Device Log Data"></tab>
         </tabset>
     </div>

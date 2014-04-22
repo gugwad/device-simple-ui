@@ -30,7 +30,8 @@
                     <div class="form-group">
                         <label for="deviceType">Device type</label>
                         <input type="text" id="deviceType" ng-model="device.deviceType"
-                               typeahead="deviceType as deviceType.name for deviceType in deviceTypes | limitTo:8" class="form-control">
+                               typeahead="deviceType as deviceType.name for deviceType in searchDeviceType($viewValue) | limitTo:8"
+                               class="form-control">
                     </div>
                 </div>
                 <div class="row with-bottom-border"></div>

@@ -2,7 +2,8 @@
 
 
 // Declare app level module which depends on filters, and services
-var muzimaDevice = angular.module('muzimaDevice', ['ngRoute', 'muzimaDevice.filters', 'muzimaDevice.services', 'muzimaDevice.directives', 'muzimaDevice.controllers', 'ui.bootstrap']);
+var muzimaDevice = angular.module('muzimaDevice', ['ngRoute', 'ui.bootstrap',
+    'muzimaDevice.filters', 'muzimaDevice.services', 'muzimaDevice.directives', 'muzimaDevice.controllers']);
 
 muzimaDevice.config(['$routeProvider', function ($routeProvider) {
     $routeProvider.when('/home', {templateUrl: 'partials/home.html', controller: 'HomeCtrl'});
@@ -132,6 +133,38 @@ muzimaDevice.service('$deviceType', function ($http, $dataProvider) {
         getDeviceType: getDeviceType,
         updateDeviceType: updateDeviceType,
         saveDeviceType: saveDeviceType
+    }
+});
+
+muzimaDevice.service('$assignment', function($http, $dataProvider) {
+    var searchAssignment = function(deviceId, personId) {
+        return $http({
+            method: "GET",
+            params: {
+                deviceId: deviceId,
+                personId: personId
+            },
+            url: $dataProvider + "/api/assignment"
+        })
+    };
+    var updateAssignment = function(assignment) {
+        return $http({
+            method: "PUT",
+            data: assignment,
+            url: $dataProvider + "/api/assignment/" + assignment.id
+        });
+    };
+    var saveAssignment = function(assignment) {
+        return $http({
+            method: "POST",
+            data: assignment,
+            url: $dataProvider + "/api/assignment"
+        });
+    };
+    return {
+        searchAssignment: searchAssignment,
+        updateAssignment: updateAssignment,
+        saveAssignment: saveAssignment
     }
 });
 
