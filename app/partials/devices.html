@@ -27,7 +27,7 @@
         <td>{{device.name}}</td>
         <td>{{device.imei}}</td>
         <td>{{device.sim}}</td>
-        <td>{{device.purchasedDate}}</td>
+        <td>{{device.purchasedDate | date:'dd-MMM-yyyy'}}</td>
         <td>{{device.status}}</td>
         <td>{{device.deviceType.name}}</td>
     </tr>

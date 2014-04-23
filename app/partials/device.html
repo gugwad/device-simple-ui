@@ -46,7 +46,8 @@
                 <div class="row with-bottom-border"></div>
                 <div class="top-buffer row" ng-hide="assign">
                     <div class="col-md-3"><strong>Assigned to</strong></div>
-                    <div class="col-md-5">N/A</div>
+                    <div ng-cloak ng-hide="preferredName" class="col-md-5">NA</div>
+                    <div ng-cloak ng-show="preferredName" class="col-md-5">{{preferredName.familyName}}, {{preferredName.givenName}} {{preferredName.middleName}}</div>
                     <div class="col-md-4 pull-right text-right">
                         <a class="no-decoration" ng-click="editAssignment()">
                             <span class="glyphicon glyphicon-pencil"></span> Edit
@@ -54,16 +55,24 @@
                     </div>
                 </div>
                 <div class="top-buffer row" ng-show="assign">
-                    <div class="col-md-3" style="margin-top: 8px"><strong>Assigned to</strong></div>
-                    <div class="col-md-7">
+                    <div class="col-md-3" style="margin-top: 8px"><strong>Assign to</strong></div>
+                    <div class="col-md-4">
                         <form class="form-inline" role="form">
                             <div class="form-group">
                                 <label class="sr-only" for="person">Assignee</label>
-                                <input type="text" id="person" ng-model="assignment.person"
+                                <input type="text" id="person" ng-model="person"
                                        typeahead="person as person.name for person in searchPerson($viewValue) | limitTo:8"
-                                       class="form-control" />
+                                       typeahead-wait-ms="500" class="form-control" />
                             </div>
                         </form>
+                    </div>
+                    <div class="col-md-4" style="margin-top: 8px" ng-show="preferredName">
+                        {{preferredName.familyName}}, {{preferredName.givenName}} {{preferredName.middleName}}
+                        <strong>(Currently)</strong>
+                    </div>
+                    <div class="col-md-4" style="margin-top: 8px" ng-hide="preferredName">
+                        NA
+                        <strong>(Currently)</strong>
                     </div>
                 </div>
                 <div class="row top-buffer" ng-show="assign"></div>

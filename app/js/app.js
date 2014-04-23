@@ -192,4 +192,52 @@ muzimaDevice.run(function ($rootScope) {
                 return "Other";
         }
     };
+
+    $rootScope.getPreferredName = function(person) {
+        var preferredName = {};
+        if (person.hasOwnProperty("personNames")) {
+            preferredName = person["personNames"][0];
+            angular.forEach(person["personNames"], function (personName) {
+                if (personName.hasOwnProperty('preferred')) {
+                    var preferred = personName["preferred"];
+                    if (preferred === 'true') {
+                        preferredName = personName;
+                    }
+                }
+            });
+        }
+        return preferredName;
+    };
+
+    $rootScope.getPreferredAddress = function(person) {
+        var preferredAddress = {};
+        if (person.hasOwnProperty("personAddresses")) {
+            preferredAddress = person["personAddresses"][0];
+            angular.forEach(person["personAddresses"], function (personAddress) {
+                if (personAddress.hasOwnProperty('preferred')) {
+                    var preferred = personAddress["preferred"];
+                    if (preferred === 'true') {
+                        preferredAddress = personAddress;
+                    }
+                }
+            });
+        }
+        return preferredAddress;
+    };
+
+    $rootScope.getProperty = function(object, property) {
+        if (object.hasOwnProperty(property)) {
+            if (object[property] != null && object[property] !== '') {
+                return object[property];
+            }
+        }
+        return '';
+    };
+
+    $rootScope.createName = function(preferredName) {
+        var name = $rootScope.getProperty(preferredName, "familyName");
+        name = name + ", " + $rootScope.getProperty(preferredName, "givenName");
+        name = name + " " + $rootScope.getProperty(preferredName, "middleName");
+        return name;
+    };
 });

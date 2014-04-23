@@ -55,17 +55,7 @@ angular.module('muzimaDevice.controllers')
 
                     $scope.preferredName = {};
                     if (data.hasOwnProperty('personNames')) {
-                        var personNames = data["personNames"];
-                        $scope.preferredName = personNames[0];
-                        for (var i = 0; i < personNames.length; i++) {
-                            var personName = personNames[i];
-                            if (personName.hasOwnProperty('preferred')) {
-                                var preferred = personName["preferred"];
-                                if (preferred === 'true') {
-                                    $scope.preferredName = personName;
-                                }
-                            }
-                        }
+                        $scope.preferredName = $rootScope.getPreferredName($scope.person);
                     }
                 });
         }])
@@ -98,15 +88,7 @@ angular.module('muzimaDevice.controllers')
 
             $scope.$watch('person["personNames"]', function (newValue, oldValue) {
                 if (newValue != oldValue) {
-                    $scope.preferredName = $scope.person["personNames"][0];
-                    angular.forEach($scope.person["personNames"], function (personName) {
-                        if (personName.hasOwnProperty('preferred')) {
-                            var preferred = personName["preferred"];
-                            if (preferred === 'true') {
-                                $scope.preferredName = personName;
-                            }
-                        }
-                    });
+                    $scope.preferredName = $rootScope.getPreferredName($scope.person);
                 }
             }, true);
 
@@ -162,15 +144,9 @@ angular.module('muzimaDevice.controllers')
 
                     $scope.preferredName = {};
                     if ($scope.person.hasOwnProperty('personNames')) {
-                        $scope.preferredName = $scope.person["personNames"][0];
+                        $scope.preferredName = $rootScope.getPreferredName($scope.person);
                         angular.forEach($scope.person["personNames"], function (personName) {
                             personName.active = false;
-                            if (personName.hasOwnProperty('preferred')) {
-                                var preferred = personName["preferred"];
-                                if (preferred === 'true') {
-                                    $scope.preferredName = personName;
-                                }
-                            }
                         });
                         // make the first tab as active
                         $scope.person["personNames"][0].active = true;

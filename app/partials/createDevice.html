@@ -41,10 +41,24 @@
                 <div class="row top-buffer"></div>
                 <div class="row with-bottom-border"></div>
                 <div class="top-buffer row">
-                    <div class="col-md-3"><strong>Assigned to</strong></div>
-                    <div class="col-md-5">N/A</div>
-                    <div class="col-md-4 pull-right text-right">
-                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                    <div class="col-md-3" style="margin-top: 8px"><strong>Assign to</strong></div>
+                    <div class="col-md-4">
+                        <form class="form-inline" role="form">
+                            <div class="form-group">
+                                <label class="sr-only" for="person">Assignee</label>
+                                <input type="text" id="person" ng-model="person"
+                                       typeahead="person as person.name for person in searchPerson($viewValue) | limitTo:8"
+                                       typeahead-wait-ms="500" class="form-control" />
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4" style="margin-top: 8px" ng-show="preferredName">
+                        {{preferredName.familyName}}, {{preferredName.givenName}} {{preferredName.middleName}}
+                        <strong>(Currently)</strong>
+                    </div>
+                    <div class="col-md-4" style="margin-top: 8px" ng-hide="preferredName">
+                        NA
+                        <strong>(Currently)</strong>
                     </div>
                 </div>
                 <div class="row top-buffer"></div>

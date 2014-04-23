@@ -45,13 +45,13 @@ angular.module('muzimaDevice.controllers')
         function ($device, $person, $assignment, $filter, $rootScope, $scope, $routeParams) {
             $scope.device = {};
             $scope.assignment = {};
+            $scope.groupedDetails = {};
             $scope.deviceId = $routeParams.deviceId;
             $device.getDevice($scope.deviceId)
                 .success(function (data) {
                     $scope.device = data;
                     // device details will be grouped by the category
                     // device detail have: { category, subCategory, categoryValue}
-                    $scope.groupedDetails = {};
                     var deviceType = data["deviceType"];
                     if (deviceType.hasOwnProperty("deviceDetails")) {
                         var categories = [];
@@ -74,7 +74,19 @@ angular.module('muzimaDevice.controllers')
                     }
                     $assignment.searchAssignment($scope.device["id"])
                         .success(function (data) {
-                            $scope.assignment = data.results;
+                            angular.forEach(data.results, function(item) {
+                                $scope.assignment = item;
+                                if ($scope.assignment.hasOwnProperty("person")) {
+                                    var person = $scope.assignment["person"];
+                                    $scope.preferredName = $rootScope.getPreferredName(person);
+                                    var name = $rootScope.createName($scope.preferredName);
+                                    $scope.person = {
+                                        id: person["id"],
+                                        name: name
+                                    };
+
+                                }
+                            });
                         });
                 });
 
@@ -82,37 +94,13 @@ angular.module('muzimaDevice.controllers')
                 $scope.assign = true;
             };
 
-            var getProperty = function(object, property) {
-                var value = "";
-                if (object.hasOwnProperty(property)) {
-                    if (object[property] != null && object[property] !== '') {
-                        return object[property];
-                    }
-                }
-                return value;
-            };
-
             $scope.searchPerson = function (search) {
                 return $person.searchPerson(search)
                     .then(function (data) {
                         var persons = [];
                         angular.forEach(data.data.results, function(item) {
-                            var name = "";
-                            if (item.hasOwnProperty("personNames")) {
-                                var preferredName = item["personNames"][0];
-                                angular.forEach(item["personNames"], function (personName) {
-                                    if (personName.hasOwnProperty('preferred')) {
-                                        var preferred = personName["preferred"];
-                                        if (preferred === 'true') {
-                                            preferredName = personName;
-                                        }
-                                    }
-                                });
-
-                                name = getProperty(preferredName, "familyName");
-                                name = name + ", " + getProperty(preferredName, "givenName");
-                                name = name + " " + getProperty(preferredName, "middleName");
-                            }
+                            var preferredName = $rootScope.getPreferredName(item);
+                            var name = $rootScope.createName(preferredName);
                             persons.push({
                                 id: item["id"],
                                 name: name
@@ -126,22 +114,37 @@ angular.module('muzimaDevice.controllers')
                 $scope.assign = false;
             };
 
-            $scope.saveAssignment = function() {
-                if (!$scope.assignment.hasOwnProperty("device")) {
-                    $scope.assignment["device"] = {};
-                    $scope.assignment.device["id"] = $scope.device["id"];
+            $scope.saveAssignment = function () {
+                $scope.assignment["device"] = $scope.device;
+                $scope.assignment["person"] = $scope.person;
+                if ($scope.assignment.hasOwnProperty("id")) {
+                    $assignment.updateAssignment($scope.assignment)
+                        .success(function (data) {
+                            $scope.assign = false;
+                            $scope.assignment = data;
+                            if ($scope.assignment.hasOwnProperty("person")) {
+                                var person = $scope.assignment["person"];
+                                $scope.preferredName = $rootScope.getPreferredName(person)
+                            }
+                        });
+                } else {
+                    $assignment.saveAssignment($scope.assignment)
+                        .success(function (data) {
+                            $scope.assign = false;
+                            $scope.assignment = data;
+                            if ($scope.assignment.hasOwnProperty("person")) {
+                                var person = $scope.assignment["person"];
+                                $scope.preferredName = $rootScope.getPreferredName(person)
+                            }
+                        });
                 }
-                console.log($assignment);
-                $assignment.saveAssignment($scope.assignment)
-                    .success(function (data) {
-                        $scope.assignment = data;
-                    });
             };
         }])
-    .controller('CreateDeviceCtrl', ['$device', '$deviceType', '$filter', '$rootScope', '$scope', '$location',
-        function ($device, $deviceType, $filter, $rootScope, $scope, $location) {
+    .controller('CreateDeviceCtrl', ['$device', '$deviceType', '$person', '$assignment', '$filter', '$rootScope', '$scope', '$location',
+        function ($device, $deviceType, $person, $assignment, $filter, $rootScope, $scope, $location) {
 
             $scope.device = {};
+            $scope.assignment = {};
             $scope.groupedDetails = {};
 
             $scope.searchDeviceType = function (search) {
@@ -186,6 +189,22 @@ angular.module('muzimaDevice.controllers')
                 }
             });
 
+            $scope.searchPerson = function (search) {
+                return $person.searchPerson(search)
+                    .then(function (data) {
+                        var persons = [];
+                        angular.forEach(data.data.results, function(item) {
+                            var preferredName = $rootScope.getPreferredName(item);
+                            var name = $rootScope.createName(preferredName);
+                            persons.push({
+                                id: item["id"],
+                                name: name
+                            });
+                        });
+                        return persons;
+                    });
+            };
+
             $scope.saveDevice = function () {
                 var purchasedDate = $scope.device["purchasedDate"];
                 if (purchasedDate instanceof Date && !isNaN(purchasedDate.valueOf())) {
@@ -194,15 +213,20 @@ angular.module('muzimaDevice.controllers')
                 $device.saveDevice($scope.device)
                     .success(function (data) {
                         if (data.hasOwnProperty("id")) {
-                            $location.path("/device/" + data["id"]);
+                            $scope.assignment["device"] = data;
+                            $scope.assignment["person"] = $scope.person;
+                            $assignment.saveAssignment($scope.assignment).then(function () {
+                                $location.path("/device/" + data["id"]);
+                            });
                         }
                     });
             };
         }])
-    .controller('EditDeviceCtrl', ['$device', '$deviceType', '$filter', '$rootScope', '$scope', '$routeParams', '$location',
-        function ($device, $deviceType, $filter, $rootScope, $scope, $routeParams, $location) {
+    .controller('EditDeviceCtrl', ['$device', '$deviceType', '$person', '$assignment', '$filter', '$rootScope', '$scope', '$routeParams', '$location',
+        function ($device, $deviceType, $person, $assignment, $filter, $rootScope, $scope, $routeParams, $location) {
 
             $scope.device = {};
+            $scope.assignment = {};
             $scope.groupedDetails = {};
 
             $scope.deviceId = $routeParams.deviceId;
@@ -230,6 +254,23 @@ angular.module('muzimaDevice.controllers')
                             $scope.groupedDetails[category["name"]] = $filter('filter')(deviceDetails, {"category": category["name"]});
                         });
                     }
+
+                    $assignment.searchAssignment($scope.device["id"])
+                        .success(function (data) {
+                            angular.forEach(data.results, function(item) {
+                                $scope.assignment = item;
+                                if ($scope.assignment.hasOwnProperty("person")) {
+                                    var person = $scope.assignment["person"];
+                                    $scope.preferredName = $rootScope.getPreferredName(person);
+                                    var name = $rootScope.createName($scope.preferredName);
+                                    $scope.person = {
+                                        id: person["id"],
+                                        name: name
+                                    };
+
+                                }
+                            });
+                        });
                 });
 
             $scope.searchDeviceType = function (search) {
@@ -274,6 +315,22 @@ angular.module('muzimaDevice.controllers')
                 }
             });
 
+            $scope.searchPerson = function (search) {
+                return $person.searchPerson(search)
+                    .then(function (data) {
+                        var persons = [];
+                        angular.forEach(data.data.results, function(item) {
+                            var preferredName = $rootScope.getPreferredName(item);
+                            var name = $rootScope.createName(preferredName);
+                            persons.push({
+                                id: item["id"],
+                                name: name
+                            });
+                        });
+                        return persons;
+                    });
+            };
+
             $scope.updateDevice = function () {
                 var purchasedDate = $scope.device["purchasedDate"];
                 if (purchasedDate instanceof Date && !isNaN(purchasedDate.valueOf())) {
@@ -282,7 +339,11 @@ angular.module('muzimaDevice.controllers')
                 $device.updateDevice($scope.device)
                     .success(function (data) {
                         if (data.hasOwnProperty("id")) {
-                            $location.path("/device/" + data["id"]);
+                            $scope.assignment["device"] = data;
+                            $scope.assignment["person"] = $scope.person;
+                            $assignment.updateAssignment($scope.assignment).then(function () {
+                                $location.path("/device/" + data["id"]);
+                            });
                         }
                     });
             };
