@@ -41,8 +41,8 @@ angular.module('muzimaDevice.controllers')
                 $location.path("/device");
             };
         }])
-    .controller('DeviceCtrl', ['$device', '$person', '$assignment', '$filter', '$rootScope', '$scope', '$routeParams',
-        function ($device, $person, $assignment, $filter, $rootScope, $scope, $routeParams) {
+    .controller('DeviceCtrl', ['$device', '$person', '$assignment', '$message', '$filter', '$rootScope', '$scope', '$routeParams',
+        function ($device, $person, $assignment, $message, $filter, $rootScope, $scope, $routeParams) {
             $scope.device = {};
             $scope.assignment = {};
             $scope.groupedDetails = {};
@@ -89,6 +89,22 @@ angular.module('muzimaDevice.controllers')
                             });
                         });
                 });
+
+            $scope.lockDevice = function() {
+                $message.sendCommand($scope.device.id, "LOCK_DEVICE");
+            };
+
+            $scope.unlockDevice = function() {
+                $message.sendCommand($scope.device.id, "UNLOCK_DEVICE");
+            };
+
+            $scope.wipeDevice = function() {
+                $message.sendCommand($scope.device.id, "WIPE_DEVICE");
+            };
+
+            $scope.unlinkDevice = function() {
+                $message.sendCommand($scope.device.id, "UNREGISTER_DEVICE");
+            };
 
             $scope.editAssignment = function () {
                 $scope.assign = true;
@@ -214,10 +230,20 @@ angular.module('muzimaDevice.controllers')
                     .success(function (data) {
                         if (data.hasOwnProperty("id")) {
                             $scope.assignment["device"] = data;
-                            $scope.assignment["person"] = $scope.person;
-                            $assignment.saveAssignment($scope.assignment).then(function () {
+                            if ($scope.hasOwnProperty("person")) {
+                                $scope.assignment["person"] = $scope.person;
+                                if ($scope.assignment.hasOwnProperty("id")) {
+                                    $assignment.updateAssignment($scope.assignment).then(function () {
+                                        $location.path("/device/" + data["id"]);
+                                    });
+                                } else {
+                                    $assignment.saveAssignment($scope.assignment).then(function () {
+                                        $location.path("/device/" + data["id"]);
+                                    });
+                                }
+                            } else {
                                 $location.path("/device/" + data["id"]);
-                            });
+                            }
                         }
                     });
             };
@@ -340,10 +366,20 @@ angular.module('muzimaDevice.controllers')
                     .success(function (data) {
                         if (data.hasOwnProperty("id")) {
                             $scope.assignment["device"] = data;
-                            $scope.assignment["person"] = $scope.person;
-                            $assignment.updateAssignment($scope.assignment).then(function () {
+                            if ($scope.hasOwnProperty("person")) {
+                                $scope.assignment["person"] = $scope.person;
+                                if ($scope.assignment.hasOwnProperty("id")) {
+                                    $assignment.updateAssignment($scope.assignment).then(function () {
+                                        $location.path("/device/" + data["id"]);
+                                    });
+                                } else {
+                                    $assignment.saveAssignment($scope.assignment).then(function () {
+                                        $location.path("/device/" + data["id"]);
+                                    });
+                                }
+                            } else {
                                 $location.path("/device/" + data["id"]);
-                            });
+                            }
                         }
                     });
             };

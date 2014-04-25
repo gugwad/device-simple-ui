@@ -121,13 +121,13 @@
                 <div class="container-fluid">
                     <div class="top-buffer row">
                         <div class="col-md-3"><strong>Registration ID</strong></div>
-                        <div class="col-md-9">NA</div>
+                        <div class="col-md-9">{{device.registrationKey}}</div>
                     </div>
                     <div class="row top-buffer"></div>
                     <div class="row with-bottom-border"></div>
                     <div class="top-buffer row">
                         <div class="col-md-3"><strong>Status</strong></div>
-                        <div class="col-md-9">NA</div>
+                        <div class="col-md-9">{{device.status}}</div>
                     </div>
                     <div class="row top-buffer"></div>
                     <div class="row with-bottom-border"></div>
@@ -139,14 +139,17 @@
                 <div class="container-fluid">
                     <div class="top-buffer row">
                         <div class="col-md-12 no-left-padding">
-                            <button type="submit" ng-click="updateDevice()" class="btn btn-default">
+                            <button type="submit" ng-click="lockDevice()" class="btn btn-default">
                                 Lock Device
                             </button>
-                            <button type="submit" ng-click="updateDevice()" class="btn btn-default">
+                            <button type="submit" ng-click="unlockDevice()" class="btn btn-default">
+                                Unlock Device
+                            </button>
+                            <button type="submit" ng-click="wipeDevice()" class="btn btn-default">
                                 Wipe Device
                             </button>
-                            <button type="submit" ng-click="updateDevice()" class="btn btn-default">
-                                Ping Device
+                            <button type="submit" ng-click="unlinkDevice()" class="btn btn-default">
+                                Unlink Device
                             </button>
                         </div>
                     </div>

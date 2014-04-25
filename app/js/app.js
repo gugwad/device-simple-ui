@@ -168,6 +168,22 @@ muzimaDevice.service('$assignment', function($http, $dataProvider) {
     }
 });
 
+muzimaDevice.service('$message', function($http, $dataProvider) {
+    var sendCommand = function(deviceId, command) {
+        return $http({
+            method: "GET",
+            params: {
+                deviceId: deviceId,
+                command: command
+            },
+            url: $dataProvider + "/api/message"
+        })
+    };
+    return {
+        sendCommand: sendCommand
+    }
+});
+
 muzimaDevice.run(function ($http) {
     $http.defaults.headers.common['Accept'] = "application/json";
     $http.defaults.headers.common['Content-Type'] = "application/json";
