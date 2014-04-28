@@ -121,7 +121,7 @@
                 <div class="container-fluid">
                     <div class="top-buffer row">
                         <div class="col-md-3"><strong>Registration ID</strong></div>
-                        <div class="col-md-9">{{device.registrationKey}}</div>
+                        <div class="col-md-9">{{device.registrationKey | limitTo: 50}} ...</div>
                     </div>
                     <div class="row top-buffer"></div>
                     <div class="row with-bottom-border"></div>
@@ -136,7 +136,7 @@
                         <div class="col-md-9">Unknown</div>
                     </div>
                 </div>
-                <div class="container-fluid">
+                <div class="container-fluid" ng-show="device.status != 'New'">
                     <div class="top-buffer row">
                         <div class="col-md-12 no-left-padding">
                             <button type="submit" ng-click="lockDevice()" class="btn btn-default">
