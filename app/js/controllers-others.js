@@ -12,12 +12,12 @@ angular.module('muzimaDevice.controllers')
     .controller('HomeCtrl', ['$rootScope', '$scope', function ($rootScope, $scope) {
         $rootScope.navigation = "home";
         $scope.logout = function() {
-            $scope.$emit('authentication:logout');
+            $scope.$emit('authorization:logout');
         }
     }])
     .controller('LoginCtrl', ['$rootScope', '$scope', function ($rootScope, $scope) {
         $rootScope.navigation = "login";
-        $scope.submit = function() {
+        $scope.login = function() {
             $scope.$emit('authorization:authenticate', $scope.username, $scope.password);
         }
     }]);

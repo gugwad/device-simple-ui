@@ -2,7 +2,7 @@
 
 
 // Declare app level module which depends on filters, and services
-var muzimaDevice = angular.module('muzimaDevice', ['ngRoute', 'ui.bootstrap',
+var muzimaDevice = angular.module('muzimaDevice', ['ngCookies', 'ngRoute', 'ui.bootstrap',
     'muzimaDevice.filters', 'muzimaDevice.services', 'muzimaDevice.directives', 'muzimaDevice.controllers']);
 
 muzimaDevice.config(['$routeProvider', function ($routeProvider) {
@@ -260,19 +260,23 @@ muzimaDevice.run(function ($rootScope) {
 });
 
 muzimaDevice.config(['$httpProvider', function ($httpProvider) {
-    $httpProvider.interceptors.push(function ($q, $rootScope) {
+    $httpProvider.interceptors.push(function ($q, $rootScope, $cookieStore, $window) {
         console.log("Calling registered interceptor ...");
         return {
             'request': function (config) {
-                if ($rootScope.user == null) {
-                    var deferred = $q.defer(),
-                        req = {
+                var notAuthenticated = ($cookieStore.user === 'undefined' || $cookieStore.user === 'null'
+                    || $window.localStorage["user"] === 'undefined' || $window.localStorage["user"] === 'null');
+                var notAuthenticatedRedirect = (config.url.indexOf("login") == -1 && config.url.indexOf("authentication") == -1);
+                if (notAuthenticated) {
+                    if (notAuthenticatedRedirect) {
+                        var deferred = $q.defer();
+                        $rootScope.request  = {
                             config: config,
                             deferred: deferred
                         };
-                    $rootScope.requestPool.push(req);
-                    $rootScope.$broadcast('authorization:request');
-                    return deferred.promise;
+                        $rootScope.$broadcast('authorization:request');
+                        return deferred.promise;
+                    }
                 }
                 // do something on success
                 return config || $q.when(config);
@@ -281,12 +285,11 @@ muzimaDevice.config(['$httpProvider', function ($httpProvider) {
             'responseError': function (rejection) {
                 // in case we need to intercept response error and do something with it
                 if (rejection.status == 401) {
-                    var deferred = $q.defer(),
-                        req = {
-                            config: rejection.config,
-                            deferred: deferred
-                        };
-                    $rootScope.requestPool.push(req);
+                    var deferred = $q.defer();
+                    $rootScope.request = {
+                        config: rejection.config,
+                        deferred: deferred
+                    };
                     $rootScope.$broadcast('authorization:request');
                     return deferred.promise;
                 }
@@ -296,45 +299,41 @@ muzimaDevice.config(['$httpProvider', function ($httpProvider) {
     });
 }]);
 
-muzimaDevice.run(function ($rootScope, $http, $location, $window, $dataProvider) {
+muzimaDevice.run(function ($rootScope, $cookieStore, $http, $location, $window, $dataProvider) {
     $http.defaults.headers.common['Accept'] = "application/json";
     $http.defaults.headers.common['Content-Type'] = "application/json";
 
     /**
-     * Pool of all failed requests.
+     * Pool of all failed request.
      */
-    $rootScope.requestPool = [];
+    $rootScope.path = null;
 
     $rootScope.$on('authorization:request', function () {
         console.log("Authorization information requested ...");
+        $http.defaults.headers.common['Authorization'] = null;
+        $window.localStorage["user"] = null;
+        $cookieStore.user = null;
         $location.path("/login");
 
     });
 
     /**
-     * When authorization information is accepted, execute all the pooled requests.
+     * When authorization information is accepted, execute all the pooled request.
      */
     $rootScope.$on('authorization:confirmed', function () {
-        var requests = $rootScope.requestPool;
-        var retry = function (req) {
-            $http(req.config).then(function (response) {
-                console.log("Response information: " + JSON.stringify(response));
-                req.deferred.resolve(response);
-            });
-        };
-        // execute all pooled failed requests
-        for (var i = 0; i < requests.length; i++) {
-            retry(requests[i]);
+        if ($rootScope.path == null) {
+            $location.path("/home");
+        } else {
+            $location.path($rootScope.path);
         }
-        // empty the request pool
-        $rootScope.requestPool = [];
+        $rootScope.request = null;
     });
 
     /**
      * Send the authorization information to the server and check the status returned by the server
      */
     $rootScope.$on('authorization:authenticate', function (event, username, password) {
-        console.log('Sending authorization information for event:' + event);
+        console.log('Sending authorization information for event: ', event);
         $http.defaults.headers.common['Authorization'] = 'Basic ' + $window.btoa(username + ':' + password);
         $http({
             method: 'GET',
@@ -344,10 +343,9 @@ muzimaDevice.run(function ($rootScope, $http, $location, $window, $dataProvider)
                 'Accept': ['text/json', 'application/json']
             }
         }).success(function (data) {
-            console.log('User information:' + JSON.stringify(data));
-            $rootScope.user = data.user;
+            $window.localStorage["user"] = data;
+            $cookieStore.user = data;
             $rootScope.$broadcast('authorization:confirmed');
-            $location.path("/home")
         }).error(function (data) {
             console.log(data);
         });
@@ -358,8 +356,17 @@ muzimaDevice.run(function ($rootScope, $http, $location, $window, $dataProvider)
      * Remove authorization information from the header
      */
     $rootScope.$on('authorization:logout', function () {
+        console.log("Removing authorization information.");
         $http.defaults.headers.common['Authorization'] = null;
-        $rootScope.user = null;
+        $window.localStorage["user"] = null;
+        $cookieStore.user = null;
         $location.path('/login');
+    });
+
+    $rootScope.$on('$routeChangeStart', function(event, next) {
+        var nextRoute = next["originalPath"];
+        if (nextRoute != '/login') {
+            $rootScope.path = nextRoute;
+        }
     });
 });
