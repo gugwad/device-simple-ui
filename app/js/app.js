@@ -21,7 +21,8 @@ muzimaDevice.config(['$routeProvider', function ($routeProvider) {
     $routeProvider.when('/deviceTypes', {templateUrl: 'partials/deviceTypes.html', controller: 'DeviceTypesCtrl'});
     $routeProvider.when('/settings', {templateUrl: 'partials/settings.html', controller: 'SettingsCtrl'});
     $routeProvider.when('/help', {templateUrl: 'partials/help.html', controller: 'HelpCtrl'});
-    $routeProvider.otherwise('/home');
+    $routeProvider.when('/login', {templateUrl: 'partials/login.html', controller: 'LoginCtrl'});
+    $routeProvider.otherwise({redirectTo: '/home'});
 }]);
 
 muzimaDevice.value("$dataProvider", "http://localhost:8080/device-simple");
@@ -40,14 +41,14 @@ muzimaDevice.service('$person', function ($http, $dataProvider) {
     var getPerson = function (personId) {
         return $http.get($dataProvider + "/api/person/" + personId);
     };
-    var updatePerson = function(person) {
+    var updatePerson = function (person) {
         return $http({
             method: "PUT",
             data: person,
             url: $dataProvider + "/api/person/" + person.id
         });
     };
-    var savePerson = function(person) {
+    var savePerson = function (person) {
         return $http({
             method: "POST",
             data: person,
@@ -77,14 +78,14 @@ muzimaDevice.service('$device', function ($http, $dataProvider) {
     var getDevice = function (deviceId) {
         return $http.get($dataProvider + "/api/device/" + deviceId);
     };
-    var updateDevice = function(device) {
+    var updateDevice = function (device) {
         return $http({
             method: "PUT",
             data: device,
             url: $dataProvider + "/api/device/" + device.id
         });
     };
-    var saveDevice = function(device) {
+    var saveDevice = function (device) {
         return $http({
             method: "POST",
             data: device,
@@ -114,14 +115,14 @@ muzimaDevice.service('$deviceType', function ($http, $dataProvider) {
     var getDeviceType = function (deviceTypeId) {
         return $http.get($dataProvider + "/api/deviceType/" + deviceTypeId);
     };
-    var updateDeviceType = function(deviceType) {
+    var updateDeviceType = function (deviceType) {
         return $http({
             method: "PUT",
             data: deviceType,
             url: $dataProvider + "/api/deviceType/" + deviceType.id
         });
     };
-    var saveDeviceType = function(deviceType) {
+    var saveDeviceType = function (deviceType) {
         return $http({
             method: "POST",
             data: deviceType,
@@ -136,8 +137,8 @@ muzimaDevice.service('$deviceType', function ($http, $dataProvider) {
     }
 });
 
-muzimaDevice.service('$assignment', function($http, $dataProvider) {
-    var searchAssignment = function(deviceId, personId) {
+muzimaDevice.service('$assignment', function ($http, $dataProvider) {
+    var searchAssignment = function (deviceId, personId) {
         return $http({
             method: "GET",
             params: {
@@ -147,14 +148,14 @@ muzimaDevice.service('$assignment', function($http, $dataProvider) {
             url: $dataProvider + "/api/assignment"
         })
     };
-    var updateAssignment = function(assignment) {
+    var updateAssignment = function (assignment) {
         return $http({
             method: "PUT",
             data: assignment,
             url: $dataProvider + "/api/assignment/" + assignment.id
         });
     };
-    var saveAssignment = function(assignment) {
+    var saveAssignment = function (assignment) {
         return $http({
             method: "POST",
             data: assignment,
@@ -168,8 +169,8 @@ muzimaDevice.service('$assignment', function($http, $dataProvider) {
     }
 });
 
-muzimaDevice.service('$message', function($http, $dataProvider) {
-    var sendCommand = function(deviceId, command) {
+muzimaDevice.service('$message', function ($http, $dataProvider) {
+    var sendCommand = function (deviceId, command) {
         return $http({
             method: "GET",
             params: {
@@ -209,7 +210,7 @@ muzimaDevice.run(function ($rootScope) {
         }
     };
 
-    $rootScope.getPreferredName = function(person) {
+    $rootScope.getPreferredName = function (person) {
         var preferredName = {};
         if (person.hasOwnProperty("personNames")) {
             preferredName = person["personNames"][0];
@@ -225,7 +226,7 @@ muzimaDevice.run(function ($rootScope) {
         return preferredName;
     };
 
-    $rootScope.getPreferredAddress = function(person) {
+    $rootScope.getPreferredAddress = function (person) {
         var preferredAddress = {};
         if (person.hasOwnProperty("personAddresses")) {
             preferredAddress = person["personAddresses"][0];
@@ -241,7 +242,7 @@ muzimaDevice.run(function ($rootScope) {
         return preferredAddress;
     };
 
-    $rootScope.getProperty = function(object, property) {
+    $rootScope.getProperty = function (object, property) {
         if (object.hasOwnProperty(property)) {
             if (object[property] != null && object[property] !== '') {
                 return object[property];
@@ -250,10 +251,115 @@ muzimaDevice.run(function ($rootScope) {
         return '';
     };
 
-    $rootScope.createName = function(preferredName) {
+    $rootScope.createName = function (preferredName) {
         var name = $rootScope.getProperty(preferredName, "familyName");
         name = name + ", " + $rootScope.getProperty(preferredName, "givenName");
         name = name + " " + $rootScope.getProperty(preferredName, "middleName");
         return name;
     };
+});
+
+muzimaDevice.config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.interceptors.push(function ($q, $rootScope) {
+        console.log("Calling registered interceptor ...");
+        return {
+            'request': function (config) {
+                if ($rootScope.user == null) {
+                    var deferred = $q.defer(),
+                        req = {
+                            config: config,
+                            deferred: deferred
+                        };
+                    $rootScope.requestPool.push(req);
+                    $rootScope.$broadcast('authorization:request');
+                    return deferred.promise;
+                }
+                // do something on success
+                return config || $q.when(config);
+            },
+            // optional method
+            'responseError': function (rejection) {
+                // in case we need to intercept response error and do something with it
+                if (rejection.status == 401) {
+                    var deferred = $q.defer(),
+                        req = {
+                            config: rejection.config,
+                            deferred: deferred
+                        };
+                    $rootScope.requestPool.push(req);
+                    $rootScope.$broadcast('authorization:request');
+                    return deferred.promise;
+                }
+                return $q.reject(rejection);
+            }
+        };
+    });
+}]);
+
+muzimaDevice.run(function ($rootScope, $http, $location, $window, $dataProvider) {
+    $http.defaults.headers.common['Accept'] = "application/json";
+    $http.defaults.headers.common['Content-Type'] = "application/json";
+
+    /**
+     * Pool of all failed requests.
+     */
+    $rootScope.requestPool = [];
+
+    $rootScope.$on('authorization:request', function () {
+        console.log("Authorization information requested ...");
+        $location.path("/login");
+
+    });
+
+    /**
+     * When authorization information is accepted, execute all the pooled requests.
+     */
+    $rootScope.$on('authorization:confirmed', function () {
+        var requests = $rootScope.requestPool;
+        var retry = function (req) {
+            $http(req.config).then(function (response) {
+                console.log("Response information: " + JSON.stringify(response));
+                req.deferred.resolve(response);
+            });
+        };
+        // execute all pooled failed requests
+        for (var i = 0; i < requests.length; i++) {
+            retry(requests[i]);
+        }
+        // empty the request pool
+        $rootScope.requestPool = [];
+    });
+
+    /**
+     * Send the authorization information to the server and check the status returned by the server
+     */
+    $rootScope.$on('authorization:authenticate', function (event, username, password) {
+        console.log('Sending authorization information for event:' + event);
+        $http.defaults.headers.common['Authorization'] = 'Basic ' + $window.btoa(username + ':' + password);
+        $http({
+            method: 'GET',
+            url: $dataProvider + '/api/authentication',
+            data: {},
+            headers: {
+                'Accept': ['text/json', 'application/json']
+            }
+        }).success(function (data) {
+            console.log('User information:' + JSON.stringify(data));
+            $rootScope.user = data.user;
+            $rootScope.$broadcast('authorization:confirmed');
+            $location.path("/home")
+        }).error(function (data) {
+            console.log(data);
+        });
+
+    });
+
+    /**
+     * Remove authorization information from the header
+     */
+    $rootScope.$on('authorization:logout', function () {
+        $http.defaults.headers.common['Authorization'] = null;
+        $rootScope.user = null;
+        $location.path('/login');
+    });
 });
