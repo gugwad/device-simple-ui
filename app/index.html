@@ -27,8 +27,8 @@
                 <li ng-class="{true:'active', false:''}[navigation == 'setting']"><a href="#/settings">Settings</a></li>
                 <li ng-class="{true:'active', false:''}[navigation == 'help']"><a href="#/help">Help</a></li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#" >{{$parent.numericalOrder(2)}}(Sign Out)</a></li>
+            <ul class="nav navbar-nav navbar-right" ng-controller="NavCtrl">
+                <li ng-hide="notAuthenticated"><a href="#" ng-click="logout()">{{authenticatedUser}} (Sign Out)</a></li>
             </ul>
         </div>
         <!--/.nav-collapse -->

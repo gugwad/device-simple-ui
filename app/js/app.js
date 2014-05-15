@@ -2,7 +2,7 @@
 
 
 // Declare app level module which depends on filters, and services
-var muzimaDevice = angular.module('muzimaDevice', ['ngCookies', 'ngRoute', 'ui.bootstrap',
+var muzimaDevice = angular.module('muzimaDevice', ['ngRoute', 'ui.bootstrap',
     'muzimaDevice.filters', 'muzimaDevice.services', 'muzimaDevice.directives', 'muzimaDevice.controllers']);
 
 muzimaDevice.config(['$routeProvider', function ($routeProvider) {
@@ -210,7 +210,7 @@ muzimaDevice.run(function ($rootScope) {
         }
     };
 
-    $rootScope.getPreferredName = function (person, $cookieStore, $window) {
+    $rootScope.getPreferredName = function (person) {
         var preferredName = {};
         if (person.hasOwnProperty("personNames")) {
             preferredName = person["personNames"][0];
@@ -257,35 +257,18 @@ muzimaDevice.run(function ($rootScope) {
         name = name + " " + $rootScope.getProperty(preferredName, "middleName");
         return name;
     };
-
-    $rootScope.getAuthenticatedUser = function() {
-        console.log("Blah bleh bloh");
-        if ($cookieStore.user === 'undefined' || $cookieStore.user === 'null') {
-            var cookieUser = $cookieStore.user;
-            var cookieFullName = cookieUser["givenName"] + " " + cookieUser["familyName"];
-            console.log("local storage name: " + cookieFullName );
-            return cookieFullName ;
-        }
-
-        if ($window.localStorage["user"] === 'undefined' || $window.localStorage["user"] === 'null') {
-            var windowUser = $window.localStorage["user"];
-            var windowFullName = windowUser["givenName"] + " " + windowUser["familyName"];
-            console.log("local storage name: " + windowFullName);
-            return windowFullName;
-        }
-        return "Super User";
-    }
 });
 
 muzimaDevice.config(['$httpProvider', function ($httpProvider) {
-    $httpProvider.interceptors.push(function ($q, $rootScope, $cookieStore, $window) {
+    $httpProvider.interceptors.push(function ($q, $rootScope, $window) {
         console.log("Calling registered interceptor ...");
         return {
             'request': function (config) {
-                var notAuthenticated = ($cookieStore.user == null || $cookieStore.user === 'undefined'
-                    || $cookieStore.user === 'null' || $window.localStorage["user"] == null
-                    || $window.localStorage["user"] === 'undefined' || $window.localStorage["user"] === 'null');
-                var notAuthenticatedRedirect = (config.url.indexOf("login") == -1 && config.url.indexOf("authentication") == -1);
+                var notAuthenticated = ($window.localStorage["user"] == null
+                    || $window.localStorage["user"] === 'undefined'
+                    || $window.localStorage["user"] === 'null');
+                var notAuthenticatedRedirect = (config.url.indexOf("login") == -1
+                    && config.url.indexOf("authentication") == -1);
                 if (notAuthenticated) {
                     if (notAuthenticatedRedirect) {
                         var deferred = $q.defer();
@@ -318,7 +301,7 @@ muzimaDevice.config(['$httpProvider', function ($httpProvider) {
     });
 }]);
 
-muzimaDevice.run(function ($rootScope, $route, $cookieStore, $http, $location, $window, $dataProvider) {
+muzimaDevice.run(function ($rootScope, $route, $http, $location, $window, $dataProvider) {
     $http.defaults.headers.common['Accept'] = "application/json";
     $http.defaults.headers.common['Content-Type'] = "application/json";
 
@@ -328,10 +311,8 @@ muzimaDevice.run(function ($rootScope, $route, $cookieStore, $http, $location, $
     $rootScope.path = null;
 
     $rootScope.$on('authorization:request', function () {
-        var authorization = $cookieStore.authorization;
-        if (authorization == null || authorization === 'null' || authorization === 'undefined') {
-            authorization = $window.localStorage["authorization"];
-        }
+        console.log("Authorization requested!")
+        var authorization = $window.localStorage["authorization"];
         if (authorization == null || authorization === 'undefined' || authorization === 'null') {
             $http.defaults.headers.common['Authorization'] = null;
             $location.path("/login");
@@ -345,8 +326,8 @@ muzimaDevice.run(function ($rootScope, $route, $cookieStore, $http, $location, $
                     'Accept': ['text/json', 'application/json']
                 }
             }).success(function (data) {
-                $window.localStorage["user"] = data;
-                $cookieStore.user = data;
+                var stringData = JSON.stringify(data);
+                $window.localStorage["user"] = stringData;
                 $rootScope.$broadcast('authorization:confirmed');
             }).error(function (data) {
                 console.log(data);
@@ -375,7 +356,6 @@ muzimaDevice.run(function ($rootScope, $route, $cookieStore, $http, $location, $
     $rootScope.$on('authorization:authenticate', function (event, username, password) {
         console.log('Sending authorization information for event: ', event);
         var authorization = 'Basic ' + $window.btoa(username + ':' + password);
-        $cookieStore.authorization = authorization;
         $window.localStorage["authorization"] = authorization;
         $http.defaults.headers.common['Authorization'] = authorization;
         $http({
@@ -386,8 +366,8 @@ muzimaDevice.run(function ($rootScope, $route, $cookieStore, $http, $location, $
                 'Accept': ['text/json', 'application/json']
             }
         }).success(function (data) {
-            $window.localStorage["user"] = data;
-            $cookieStore.user = data;
+            var stringData = JSON.stringify(data);
+            $window.localStorage["user"] = stringData;
             $rootScope.$broadcast('authorization:confirmed');
         }).error(function (data) {
             console.log(data);
@@ -398,8 +378,6 @@ muzimaDevice.run(function ($rootScope, $route, $cookieStore, $http, $location, $
      * Remove authorization information from the header
      */
     $rootScope.$on('authorization:logout', function () {
-        delete $cookieStore.user;
-        delete $cookieStore.authorization;
         delete $window.localStorage["user"];
         delete $window.localStorage["authorization"];
         delete $http.defaults.headers.common['Authorization'];
