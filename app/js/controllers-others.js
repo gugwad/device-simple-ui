@@ -14,9 +14,14 @@ angular.module('muzimaDevice.controllers')
     }])
     .controller('LoginCtrl', ['$rootScope', '$scope', function ($rootScope, $scope) {
         $rootScope.navigation = "login";
+        $scope.authorizationInvalid = false;
         $scope.login = function () {
             $scope.$emit('authorization:authenticate', $scope.username, $scope.password);
-        }
+        };
+
+        $scope.$on('authorization:invalid', function() {
+            $scope.authorizationInvalid = true;
+        });
     }])
     .controller('NavCtrl', ['$window', '$rootScope', '$scope', function ($window, $rootScope, $scope) {
 

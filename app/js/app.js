@@ -293,6 +293,7 @@ muzimaDevice.config(['$httpProvider', function ($httpProvider) {
                         deferred: deferred
                     };
                     $rootScope.$broadcast('authorization:request');
+                    $rootScope.$broadcast('authorization:invalid');
                     return deferred.promise;
                 }
                 return $q.reject(rejection);

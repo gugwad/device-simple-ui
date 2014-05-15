@@ -47,13 +47,12 @@
     }
 
 </style>
-
 <div class="container">
     <form ng-submit="login()" class="form-signin" role="form">
         <h2 class="form-signin-heading">Please sign in</h2>
+        <p ng-show="authorizationInvalid" class="bg-danger">Authentication failed.</p>
         <input type="text" id="username" ng-model="username" class="form-control" placeholder="Username" required autofocus>
         <input type="password" id="password" ng-model="password" class="form-control" placeholder="Password" required>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
     </form>
-
 </div> <!-- /container -->
