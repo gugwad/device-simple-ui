@@ -264,9 +264,9 @@ muzimaDevice.config(['$httpProvider', function ($httpProvider) {
         console.log("Calling registered interceptor ...");
         return {
             'request': function (config) {
-                var notAuthenticated = ($window.localStorage["user"] == null
-                    || $window.localStorage["user"] === 'undefined'
-                    || $window.localStorage["user"] === 'null');
+                var notAuthenticated = ($window.sessionStorage["user"] == null
+                    || $window.sessionStorage["user"] === 'undefined'
+                    || $window.sessionStorage["user"] === 'null');
                 var notAuthenticatedRedirect = (config.url.indexOf("login") == -1
                     && config.url.indexOf("authentication") == -1);
                 if (notAuthenticated) {
@@ -311,8 +311,8 @@ muzimaDevice.run(function ($rootScope, $route, $http, $location, $window, $dataP
     $rootScope.path = null;
 
     $rootScope.$on('authorization:request', function () {
-        console.log("Authorization requested!")
-        var authorization = $window.localStorage["authorization"];
+        var authorization = $window.sessionStorage["authorization"];
+        delete $window.sessionStorage["authorization"];
         if (authorization == null || authorization === 'undefined' || authorization === 'null') {
             $http.defaults.headers.common['Authorization'] = null;
             $location.path("/login");
@@ -326,11 +326,12 @@ muzimaDevice.run(function ($rootScope, $route, $http, $location, $window, $dataP
                     'Accept': ['text/json', 'application/json']
                 }
             }).success(function (data) {
-                var stringData = JSON.stringify(data);
-                $window.localStorage["user"] = stringData;
+                $window.sessionStorage["user"] = JSON.stringify(data);
+                $window.sessionStorage["authorization"] = authorization;
                 $rootScope.$broadcast('authorization:confirmed');
             }).error(function (data) {
-                console.log(data);
+                console.log("Unable to authenticate.", data);
+                $rootScope.$broadcast('authorization:logout');
             });
         }
     });
@@ -356,7 +357,6 @@ muzimaDevice.run(function ($rootScope, $route, $http, $location, $window, $dataP
     $rootScope.$on('authorization:authenticate', function (event, username, password) {
         console.log('Sending authorization information for event: ', event);
         var authorization = 'Basic ' + $window.btoa(username + ':' + password);
-        $window.localStorage["authorization"] = authorization;
         $http.defaults.headers.common['Authorization'] = authorization;
         $http({
             method: 'GET',
@@ -366,11 +366,12 @@ muzimaDevice.run(function ($rootScope, $route, $http, $location, $window, $dataP
                 'Accept': ['text/json', 'application/json']
             }
         }).success(function (data) {
-            var stringData = JSON.stringify(data);
-            $window.localStorage["user"] = stringData;
+            $window.sessionStorage["user"] = JSON.stringify(data);
+            $window.sessionStorage["authorization"] = authorization;
             $rootScope.$broadcast('authorization:confirmed');
         }).error(function (data) {
-            console.log(data);
+            console.log("Unable to authenticate.", data);
+            $rootScope.$broadcast('authorization:logout');
         });
     });
 
@@ -378,8 +379,8 @@ muzimaDevice.run(function ($rootScope, $route, $http, $location, $window, $dataP
      * Remove authorization information from the header
      */
     $rootScope.$on('authorization:logout', function () {
-        delete $window.localStorage["user"];
-        delete $window.localStorage["authorization"];
+        delete $window.sessionStorage["user"];
+        delete $window.sessionStorage["authorization"];
         delete $http.defaults.headers.common['Authorization'];
         console.log("Removing authorization information.");
         $location.path('/login');

@@ -25,13 +25,13 @@ angular.module('muzimaDevice.controllers')
         };
 
         var updateState = function() {
-            $scope.notAuthenticated = ($window.localStorage["user"] == null
-                || $window.localStorage["user"] === 'undefined'
-                || $window.localStorage["user"] === 'null');
+            $scope.notAuthenticated = ($window.sessionStorage["user"] == null
+                || $window.sessionStorage["user"] === 'undefined'
+                || $window.sessionStorage["user"] === 'null');
 
             var givenName, familyName;
             if (!$scope.notAuthenticated) {
-                var object = $window.localStorage["user"];
+                var object = $window.sessionStorage["user"];
                 if (object != null && object !== 'null' && object !== 'undefined') {
                     var stringObject = JSON.parse(object);
                     givenName = stringObject["givenName"];
