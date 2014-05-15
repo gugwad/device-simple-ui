@@ -210,7 +210,7 @@ muzimaDevice.run(function ($rootScope) {
         }
     };
 
-    $rootScope.getPreferredName = function (person) {
+    $rootScope.getPreferredName = function (person, $cookieStore, $window) {
         var preferredName = {};
         if (person.hasOwnProperty("personNames")) {
             preferredName = person["personNames"][0];
@@ -257,6 +257,24 @@ muzimaDevice.run(function ($rootScope) {
         name = name + " " + $rootScope.getProperty(preferredName, "middleName");
         return name;
     };
+
+    $rootScope.getAuthenticatedUser = function() {
+        console.log("Blah bleh bloh");
+        if ($cookieStore.user === 'undefined' || $cookieStore.user === 'null') {
+            var cookieUser = $cookieStore.user;
+            var cookieFullName = cookieUser["givenName"] + " " + cookieUser["familyName"];
+            console.log("local storage name: " + cookieFullName );
+            return cookieFullName ;
+        }
+
+        if ($window.localStorage["user"] === 'undefined' || $window.localStorage["user"] === 'null') {
+            var windowUser = $window.localStorage["user"];
+            var windowFullName = windowUser["givenName"] + " " + windowUser["familyName"];
+            console.log("local storage name: " + windowFullName);
+            return windowFullName;
+        }
+        return "Super User";
+    }
 });
 
 muzimaDevice.config(['$httpProvider', function ($httpProvider) {
@@ -264,7 +282,8 @@ muzimaDevice.config(['$httpProvider', function ($httpProvider) {
         console.log("Calling registered interceptor ...");
         return {
             'request': function (config) {
-                var notAuthenticated = ($cookieStore.user === 'undefined' || $cookieStore.user === 'null'
+                var notAuthenticated = ($cookieStore.user == null || $cookieStore.user === 'undefined'
+                    || $cookieStore.user === 'null' || $window.localStorage["user"] == null
                     || $window.localStorage["user"] === 'undefined' || $window.localStorage["user"] === 'null');
                 var notAuthenticatedRedirect = (config.url.indexOf("login") == -1 && config.url.indexOf("authentication") == -1);
                 if (notAuthenticated) {
@@ -299,7 +318,7 @@ muzimaDevice.config(['$httpProvider', function ($httpProvider) {
     });
 }]);
 
-muzimaDevice.run(function ($rootScope, $cookieStore, $http, $location, $window, $dataProvider) {
+muzimaDevice.run(function ($rootScope, $route, $cookieStore, $http, $location, $window, $dataProvider) {
     $http.defaults.headers.common['Accept'] = "application/json";
     $http.defaults.headers.common['Content-Type'] = "application/json";
 
@@ -309,24 +328,45 @@ muzimaDevice.run(function ($rootScope, $cookieStore, $http, $location, $window, 
     $rootScope.path = null;
 
     $rootScope.$on('authorization:request', function () {
-        console.log("Authorization information requested ...");
-        $http.defaults.headers.common['Authorization'] = null;
-        $window.localStorage["user"] = null;
-        $cookieStore.user = null;
-        $location.path("/login");
-
+        var authorization = $cookieStore.authorization;
+        if (authorization == null || authorization === 'null' || authorization === 'undefined') {
+            authorization = $window.localStorage["authorization"];
+        }
+        if (authorization == null || authorization === 'undefined' || authorization === 'null') {
+            $http.defaults.headers.common['Authorization'] = null;
+            $location.path("/login");
+        } else {
+            $http.defaults.headers.common['Authorization'] = authorization;
+            $http({
+                method: 'GET',
+                url: $dataProvider + '/api/authentication',
+                data: {},
+                headers: {
+                    'Accept': ['text/json', 'application/json']
+                }
+            }).success(function (data) {
+                $window.localStorage["user"] = data;
+                $cookieStore.user = data;
+                $rootScope.$broadcast('authorization:confirmed');
+            }).error(function (data) {
+                console.log(data);
+            });
+        }
     });
 
     /**
      * When authorization information is accepted, execute all the pooled request.
      */
     $rootScope.$on('authorization:confirmed', function () {
-        if ($rootScope.path == null) {
+        console.log("Opening page: " + $rootScope.path);
+        if ($rootScope.path == null || $rootScope.path === 'null' || $rootScope.path === 'undefined') {
             $location.path("/home");
+            $route.reload();
         } else {
             $location.path($rootScope.path);
+            $route.reload();
         }
-        $rootScope.request = null;
+        $rootScope.path = null;
     });
 
     /**
@@ -334,7 +374,10 @@ muzimaDevice.run(function ($rootScope, $cookieStore, $http, $location, $window, 
      */
     $rootScope.$on('authorization:authenticate', function (event, username, password) {
         console.log('Sending authorization information for event: ', event);
-        $http.defaults.headers.common['Authorization'] = 'Basic ' + $window.btoa(username + ':' + password);
+        var authorization = 'Basic ' + $window.btoa(username + ':' + password);
+        $cookieStore.authorization = authorization;
+        $window.localStorage["authorization"] = authorization;
+        $http.defaults.headers.common['Authorization'] = authorization;
         $http({
             method: 'GET',
             url: $dataProvider + '/api/authentication',
@@ -349,17 +392,18 @@ muzimaDevice.run(function ($rootScope, $cookieStore, $http, $location, $window, 
         }).error(function (data) {
             console.log(data);
         });
-
     });
 
     /**
      * Remove authorization information from the header
      */
     $rootScope.$on('authorization:logout', function () {
+        delete $cookieStore.user;
+        delete $cookieStore.authorization;
+        delete $window.localStorage["user"];
+        delete $window.localStorage["authorization"];
+        delete $http.defaults.headers.common['Authorization'];
         console.log("Removing authorization information.");
-        $http.defaults.headers.common['Authorization'] = null;
-        $window.localStorage["user"] = null;
-        $cookieStore.user = null;
         $location.path('/login');
     });
 
