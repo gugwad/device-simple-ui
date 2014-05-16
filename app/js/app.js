@@ -272,7 +272,7 @@ muzimaDevice.config(['$httpProvider', function ($httpProvider) {
                 if (notAuthenticated) {
                     if (notAuthenticatedRedirect) {
                         var deferred = $q.defer();
-                        $rootScope.request  = {
+                        $rootScope.request = {
                             config: config,
                             deferred: deferred
                         };
@@ -286,6 +286,9 @@ muzimaDevice.config(['$httpProvider', function ($httpProvider) {
             // optional method
             'responseError': function (rejection) {
                 // in case we need to intercept response error and do something with it
+                if (rejection.status == 403) {
+                    $rootScope.$broadcast('authorization.denied');
+                }
                 if (rejection.status == 401) {
                     var deferred = $q.defer();
                     $rootScope.request = {
@@ -387,7 +390,7 @@ muzimaDevice.run(function ($rootScope, $route, $http, $location, $window, $dataP
         $location.path('/login');
     });
 
-    $rootScope.$on('$routeChangeStart', function(event, next) {
+    $rootScope.$on('$routeChangeStart', function (event, next) {
         var nextRoute = next["originalPath"];
         if (nextRoute != '/login') {
             $rootScope.path = nextRoute;

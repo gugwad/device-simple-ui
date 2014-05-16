@@ -19,7 +19,7 @@ angular.module('muzimaDevice.controllers')
             $scope.$emit('authorization:authenticate', $scope.username, $scope.password);
         };
 
-        $scope.$on('authorization:invalid', function() {
+        $scope.$on('authorization:invalid', function () {
             $scope.authorizationInvalid = true;
         });
     }])
@@ -29,7 +29,7 @@ angular.module('muzimaDevice.controllers')
             $scope.$emit('authorization:logout');
         };
 
-        var updateState = function() {
+        var updateState = function () {
             $scope.notAuthenticated = ($window.sessionStorage["user"] == null
                 || $window.sessionStorage["user"] === 'undefined'
                 || $window.sessionStorage["user"] === 'null');
@@ -46,9 +46,14 @@ angular.module('muzimaDevice.controllers')
             $scope.authenticatedUser = givenName + " " + familyName;
         };
 
-        $scope.$on('$routeChangeStart', function() {
+        $scope.$on('$routeChangeStart', function () {
             // TODO hacky stuff goes here :)
             updateState();
-        });
-
+        })
+    }])
+    .controller('MessageCtrl', ['$rootScope', '$scope', function ($rootScope, $scope) {
+        $scope.authorizationDenied = false;
+        $scope.$on('authorization:denied', function () {
+            $scope.authorizationDenied = true;
+        })
     }]);

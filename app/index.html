@@ -35,6 +35,9 @@
     </div>
 </div>
 <!-- Begin page content -->
+<div class="container-fluid" ng-controller="MessageCtrl">
+    <p ng-show="authorizationDenied" class="bg-danger">You are not allowed to access the data on this page.</p>
+</div>
 <div class="container" ng-view></div>
 <div id="footer">
     <div class="container">
