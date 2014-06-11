@@ -279,6 +279,8 @@ muzimaDevice.config(['$httpProvider', function ($httpProvider) {
                         $rootScope.$broadcast('authorization:request');
                         return deferred.promise;
                     }
+                } else {
+                    $httpProvider.defaults.headers.common['Authorization'] = $window.sessionStorage["authorization"];
                 }
                 // do something on success
                 return config || $q.when(config);
