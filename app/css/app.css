@@ -102,3 +102,7 @@ div.head a.no-decoration:hover {
 .no-right-padding {
     padding-right: 0px;
 }
+
+.required {
+    color: red;
+}
