@@ -23,27 +23,25 @@ angular.module('muzimaDevice.controllers')
             $scope.authorizationInvalid = true;
         });
     }])
-    .controller('NavCtrl', ['$window', '$rootScope', '$scope', function ($window, $rootScope, $scope) {
+    .controller('NavCtrl', ['$window', '$user', '$rootScope', '$scope', function ($window, $user, $rootScope, $scope) {
 
         $scope.logout = function () {
             $scope.$emit('authorization:logout');
         };
 
         var updateState = function () {
-            $scope.notAuthenticated = ($window.sessionStorage["user"] == null
-                || $window.sessionStorage["user"] === 'undefined'
-                || $window.sessionStorage["user"] === 'null');
-
-            var givenName, familyName;
-            if (!$scope.notAuthenticated) {
+            var username = $window.sessionStorage["username"];
+            $scope.isNotAuthenticated = (username == null || username == undefined);
+            if (!$scope.isNotAuthenticated) {
+                $scope.authenticatedUser = username;
                 var object = $window.sessionStorage["user"];
-                if (object != null && object !== 'null' && object !== 'undefined') {
+                if (object != null && object != undefined) {
                     var stringObject = JSON.parse(object);
-                    givenName = stringObject["givenName"];
-                    familyName = stringObject["familyName"]
+                    var givenName = stringObject["givenName"];
+                    var familyName = stringObject["familyName"];
+                    $scope.authenticatedUser = $scope.authenticatedUser + " - " + givenName + " " + familyName;
                 }
             }
-            $scope.authenticatedUser = givenName + " " + familyName;
         };
 
         $scope.$on('$routeChangeStart', function () {

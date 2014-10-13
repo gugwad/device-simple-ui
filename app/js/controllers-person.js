@@ -39,8 +39,44 @@ angular.module('muzimaDevice.controllers')
                 $location.path("/person");
             };
         }])
-    .controller('PersonCtrl', ['$person', '$filter', '$rootScope', '$scope', '$routeParams',
-        function ($person, $filter, $rootScope, $scope, $routeParams) {
+    .controller('PersonCtrl', ['$person', '$user', '$filter', '$rootScope', '$scope', '$routeParams',
+        function ($person, $user, $filter, $rootScope, $scope, $routeParams) {
+
+            $scope.editUser = function () {
+                $scope.editingUser = true;
+                $user.getUser($scope.person.id)
+                    .success(function (data) {
+                        $scope.user = data;
+                        $scope.username = data["username"];
+                    }).error(function () {
+                        console.log("Unable to find user information!");
+                    });
+            };
+
+            $scope.cancelEdit = function () {
+                $scope.editingUser = false;
+            };
+
+            $scope.saveUser = function (username, password, confirmPassword) {
+                if (password === confirmPassword) {
+                    if ($scope.user == null) {
+                        $user.saveUser($scope.personId, username, password)
+                            .success(function () {
+                                $scope.editingUser = false;
+                            }).error(function () {
+                                console.log("Unable to save user information!");
+                            });
+                    } else {
+                        $user.updateUser($scope.personId, username, password)
+                            .success(function () {
+                                $scope.editingUser = false;
+                            }).error(function () {
+                                console.log("Unable to save user information!");
+                            });
+                    }
+                }
+            };
+
             $scope.personId = $routeParams.personId;
             $person.getPerson($scope.personId)
                 .success(function (data) {

@@ -44,7 +44,7 @@
                 </div>
                 <div class="row top-buffer"></div>
                 <div class="row with-bottom-border"></div>
-                <div class="top-buffer row" ng-hide="assign">
+                <div class="top-buffer row" ng-hide="assigningDevice">
                     <div class="col-md-3"><strong>Assigned to</strong></div>
                     <div ng-cloak ng-hide="preferredName" class="col-md-5">NA</div>
                     <div ng-cloak ng-show="preferredName" class="col-md-5">{{preferredName.familyName}}, {{preferredName.givenName}} {{preferredName.middleName}}</div>
@@ -54,7 +54,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="top-buffer row" ng-show="assign">
+                <div class="top-buffer row" ng-show="assigningDevice">
                     <div class="col-md-3" style="margin-top: 8px"><strong>Assign to</strong></div>
                     <div class="col-md-4">
                         <form class="form-inline" role="form">
@@ -75,9 +75,9 @@
                         <strong>(Currently)</strong>
                     </div>
                 </div>
-                <div class="row top-buffer" ng-show="assign"></div>
-                <div class="row with-bottom-border" ng-show="assign"></div>
-                <div class="top-buffer row" ng-show="assign">
+                <div class="row top-buffer" ng-show="assigningDevice"></div>
+                <div class="row with-bottom-border" ng-show="assigningDevice"></div>
+                <div class="top-buffer row" ng-show="assigningDevice">
                     <div class="col-md-3">
                         <button type="submit" class="btn btn-default" ng-click="saveAssignment()">Save</button>
                         <button type="submit" class="btn btn-default" ng-click="cancelAssignment()">Cancel</button>

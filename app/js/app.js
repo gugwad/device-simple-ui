@@ -100,6 +100,46 @@ muzimaDevice.service('$device', function ($http, $dataProvider) {
     }
 });
 
+muzimaDevice.service('$user', function ($http, $dataProvider) {
+    var getCurrentUser = function () {
+        return $http.get($dataProvider + "/api/user");
+    };
+
+    var saveUser = function (personId, username, password) {
+        return $http({
+            method: "POST",
+            data: {
+                id: personId,
+                username: username,
+                password: password
+            },
+            url: $dataProvider + "/api/user"
+        });
+    };
+
+    var updateUser = function (personId, username, password) {
+        return $http({
+            method: "PUT",
+            data: {
+                id: personId,
+                username: username,
+                password: password
+            },
+            url: $dataProvider + "/api/user/" + personId
+        });
+    };
+
+    var getUser = function (personId) {
+        return $http.get($dataProvider + "/api/user/" + personId);
+    };
+    return {
+        getCurrentUser: getCurrentUser,
+        updateUser: updateUser,
+        saveUser: saveUser,
+        getUser: getUser
+    }
+});
+
 muzimaDevice.service('$deviceType', function ($http, $dataProvider) {
     var searchDeviceType = function (search, pageSize, currentPage) {
         return $http({
@@ -264,13 +304,11 @@ muzimaDevice.config(['$httpProvider', function ($httpProvider) {
         console.log("Calling registered interceptor ...");
         return {
             'request': function (config) {
-                var notAuthenticated = ($window.sessionStorage["user"] == null
-                    || $window.sessionStorage["user"] === 'undefined'
-                    || $window.sessionStorage["user"] === 'null');
-                var notAuthenticatedRedirect = (config.url.indexOf("login") == -1
-                    && config.url.indexOf("authentication") == -1);
-                if (notAuthenticated) {
-                    if (notAuthenticatedRedirect) {
+                var username = $window.sessionStorage["username"];
+                var isNotAuthenticated = (username == null || username == undefined);
+                var isNotAuthenticationRedirect = (config.url.indexOf("login") == -1);
+                if (isNotAuthenticated) {
+                    if (isNotAuthenticationRedirect) {
                         var deferred = $q.defer();
                         $rootScope.request = {
                             config: config,
@@ -280,7 +318,7 @@ muzimaDevice.config(['$httpProvider', function ($httpProvider) {
                         return deferred.promise;
                     }
                 } else {
-                    $httpProvider.defaults.headers.common['Authorization'] = $window.sessionStorage["authorization"];
+                    $httpProvider.defaults.headers.common['Authorization'] = 'Bearer ' + $window.sessionStorage["authorization"];
                 }
                 // do something on success
                 return config || $q.when(config);
@@ -317,28 +355,12 @@ muzimaDevice.run(function ($rootScope, $route, $http, $location, $window, $dataP
     $rootScope.path = null;
 
     $rootScope.$on('authorization:request', function () {
+        console.log("Authorization requested ...");
         var authorization = $window.sessionStorage["authorization"];
         delete $window.sessionStorage["authorization"];
         if (authorization == null || authorization === 'undefined' || authorization === 'null') {
             $http.defaults.headers.common['Authorization'] = null;
             $location.path("/login");
-        } else {
-            $http.defaults.headers.common['Authorization'] = authorization;
-            $http({
-                method: 'GET',
-                url: $dataProvider + '/api/authentication',
-                data: {},
-                headers: {
-                    'Accept': ['text/json', 'application/json']
-                }
-            }).success(function (data) {
-                $window.sessionStorage["user"] = JSON.stringify(data);
-                $window.sessionStorage["authorization"] = authorization;
-                $rootScope.$broadcast('authorization:confirmed');
-            }).error(function (data) {
-                console.log("Unable to authenticate.", data);
-                $rootScope.$broadcast('authorization:logout');
-            });
         }
     });
 
@@ -346,34 +368,40 @@ muzimaDevice.run(function ($rootScope, $route, $http, $location, $window, $dataP
      * When authorization information is accepted, execute all the pooled request.
      */
     $rootScope.$on('authorization:confirmed', function () {
-        console.log("Opening page: " + $rootScope.path);
-        if ($rootScope.path == null || $rootScope.path === 'null' || $rootScope.path === 'undefined') {
-            $location.path("/home");
-            $route.reload();
-        } else {
-            $location.path($rootScope.path);
-            $route.reload();
-        }
-        $rootScope.path = null;
+        console.log("Authorization accepted ...");
+        $http.defaults.headers.common['Authorization'] =  'Bearer ' + $window.sessionStorage["authorization"];
+        $http.get($dataProvider + "/api/user")
+            .success(function (data) {
+                $window.sessionStorage["user"] = JSON.stringify(data);
+                if ($rootScope.path == null || $rootScope.path === 'null' || $rootScope.path === 'undefined') {
+                    $location.path("/home");
+                    $route.reload();
+                } else {
+                    $location.path($rootScope.path);
+                    $route.reload();
+                }
+                $rootScope.path = null;
+            });
     });
 
     /**
      * Send the authorization information to the server and check the status returned by the server
      */
     $rootScope.$on('authorization:authenticate', function (event, username, password) {
-        console.log('Sending authorization information for event: ', event);
-        var authorization = 'Basic ' + $window.btoa(username + ':' + password);
-        $http.defaults.headers.common['Authorization'] = authorization;
+        console.log('Sending authorization information for event ...');
         $http({
-            method: 'GET',
-            url: $dataProvider + '/api/authentication',
-            data: {},
+            method: 'POST',
+            url: $dataProvider + '/api/login',
+            data: {
+                username: username,
+                password: password
+            },
             headers: {
                 'Accept': ['text/json', 'application/json']
             }
         }).success(function (data) {
-            $window.sessionStorage["user"] = JSON.stringify(data);
-            $window.sessionStorage["authorization"] = authorization;
+            $window.sessionStorage["username"] = data["username"];
+            $window.sessionStorage["authorization"] = data["access_token"];
             $rootScope.$broadcast('authorization:confirmed');
         }).error(function (data) {
             console.log("Unable to authenticate.", data);
@@ -385,14 +413,24 @@ muzimaDevice.run(function ($rootScope, $route, $http, $location, $window, $dataP
      * Remove authorization information from the header
      */
     $rootScope.$on('authorization:logout', function () {
-        delete $window.sessionStorage["user"];
-        delete $window.sessionStorage["authorization"];
-        delete $http.defaults.headers.common['Authorization'];
-        console.log("Removing authorization information.");
-        $location.path('/login');
+        console.log("Removing authorization information ...");
+        $http.defaults.headers.common['Authorization'] =  'Bearer ' + $window.sessionStorage["authorization"];
+        $http({
+            method: 'POST',
+            url: $dataProvider + '/api/logout',
+            headers: {
+                'Accept': ['text/json', 'application/json']
+            }
+        }).then(function () {
+            delete $window.sessionStorage["username"];
+            delete $window.sessionStorage["authorization"];
+            delete $http.defaults.headers.common['Authorization'];
+            $location.path('/login');
+        });
     });
 
     $rootScope.$on('$routeChangeStart', function (event, next) {
+        // preventing the login redirect looping
         var nextRoute = next["originalPath"];
         if (nextRoute != '/login') {
             $rootScope.path = nextRoute;

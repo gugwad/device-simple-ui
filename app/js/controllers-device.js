@@ -107,7 +107,7 @@ angular.module('muzimaDevice.controllers')
             };
 
             $scope.editAssignment = function () {
-                $scope.assign = true;
+                $scope.assigningDevice= true;
             };
 
             $scope.searchPerson = function (search) {
@@ -127,7 +127,7 @@ angular.module('muzimaDevice.controllers')
             };
 
             $scope.cancelAssignment = function () {
-                $scope.assign = false;
+                $scope.assigningDevice = false;
             };
 
             $scope.saveAssignment = function () {
@@ -136,7 +136,7 @@ angular.module('muzimaDevice.controllers')
                 if ($scope.assignment.hasOwnProperty("id")) {
                     $assignment.updateAssignment($scope.assignment)
                         .success(function (data) {
-                            $scope.assign = false;
+                            $scope.assigningDevice = false;
                             $scope.assignment = data;
                             if ($scope.assignment.hasOwnProperty("person")) {
                                 var person = $scope.assignment["person"];
@@ -146,7 +146,7 @@ angular.module('muzimaDevice.controllers')
                 } else {
                     $assignment.saveAssignment($scope.assignment)
                         .success(function (data) {
-                            $scope.assign = false;
+                            $scope.assigningDevice = false;
                             $scope.assignment = data;
                             if ($scope.assignment.hasOwnProperty("person")) {
                                 var person = $scope.assignment["person"];
