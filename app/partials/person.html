@@ -161,7 +161,7 @@
                                 <label for="username"><strong>Username</strong></label>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" ng-model="username" class="form-control" id="username">
+                                <input type="text" ng-model="username" class="form-control" id="username" readonly="readonly">
                             </div>
                         </div>
                         <div class="bottom-buffer top-buffer row">
@@ -169,7 +169,8 @@
                                 <label for="password"><strong>Password</strong></label>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" ng-model="password" class="form-control" id="password">
+                                <input type="text" ng-model="password" class="form-control" id="password"
+                                       placeholder="Please type your new password ...">
                             </div>
                         </div>
                         <div class="bottom-buffer top-buffer row">
@@ -177,7 +178,8 @@
                                 <label for="confirm-password"><strong>Confirm Password</strong></label>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" ng-model="confirmPassword" class="form-control" id="confirm-password">
+                                <input type="text" ng-model="confirmPassword" class="form-control" id="confirm-password"
+                                       placeholder="Please type your new password again to confirm ...">
                             </div>
                         </div>
                         <div class="bottom-buffer top-buffer row">
